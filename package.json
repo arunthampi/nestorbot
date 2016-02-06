@@ -1,0 +1,24 @@
+{
+  "name": "nestorbot",
+  "version": "0.1.0",
+  "description": "Toolkit to make Nestor Bot Apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "./script/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zerobotlabs/nestorbot"
+  },
+  "keywords": [
+    "slack",
+    "hubot",
+    "botkit"
+  ],
+  "author": "Arun Thampi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zerobotlabs/nestorbot/issues"
+  },
+  "homepage": "https://github.com/zerobotlabs/nestorbot"
+}
