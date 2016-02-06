@@ -15,6 +15,12 @@
     "hubot",
     "botkit"
   ],
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "sinon-chai": "^2.8.0",
+    "sinon":"~1.17.0",
+    "chai":"~2.1.0"
+  },
   "author": "Arun Thampi",
   "license": "MIT",
   "bugs": {
