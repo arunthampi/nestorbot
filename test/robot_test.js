@@ -56,6 +56,51 @@ describe('Robot', function() {
         expect(testMessage).to.not.match(pattern);
       });
     });
+
+    describe('#loadFile', function() {
+      beforeEach(function() {
+        this.sandbox = sinon.sandbox.create();
+      });
+
+      afterEach(function() {
+        this.sandbox.restore();
+      });
+
+      it('should require the specified file', function() {
+        var module = require('module');
+        var script = sinon.spy(function(robot) {});
+        this.sandbox.stub(module, '_load').returns(script);
+        this.robot.loadFile('./scripts', 'test-script.js');
+        expect(module._load).to.have.been.calledWith('scripts/test-script');
+      });
+
+      describe('proper script', function() {
+        beforeEach(function() {
+          var module = require('module');
+          this.script = sinon.spy(function(robot) {});
+          this.sandbox.stub(module, '_load').returns(this.script);
+        });
+
+        it('should call the script with the Robot', function() {
+          this.robot.loadFile('./scripts', 'test-script.js');
+          expect(this.script).to.have.been.calledWith(this.robot);
+        });
+      });
+
+      describe('non-Function script', function() {
+        beforeEach(function() {
+          var module = require('module');
+          this.script = {};
+          this.sandbox.stub(module, '_load').returns(this.script);
+        });
+
+        it('logs a warning', function() {
+          sinon.stub(this.robot.logger, 'warning');
+          this.robot.loadFile('./scripts', 'test-script.js');
+          expect(this.robot.logger.warning).to.have.been.called;
+        });
+      });
+    });
   });
 });
 

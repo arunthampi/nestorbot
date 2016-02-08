@@ -1,5 +1,7 @@
 var _ref = require('./listener'), Listener = _ref.Listener, TextListener = _ref.TextListener;
 var TextMessage = require('./message').TextMessage;
+var Path = require('path');
+var Log = require('log');
 
 // Robots receive messages from Nestor and dispatch them to matching listeners.
 //
@@ -14,6 +16,10 @@ var Robot = function(teamId, botId, debugMode) {
   this.botId = botId;
   this.debugMode = debugMode;
   this.listeners = [];
+  if(this.debugMode == true) {
+    process.env.NESTOR_LOG_LEVEL = 'debug';
+  }
+  this.logger = new Log(process.env.NESTOR_LOG_LEVEL || 'info');
 };
 
 // Public: Build a regular expression that matches messages addressed
@@ -65,5 +71,31 @@ Robot.prototype.respond = function(regex, options, callback) {
   this.hear(this.respondPattern(regex), options, callback);
 };
 
+// Public: Loads a file in path.
+//
+// path - A String path on the filesystem.
+// file - A String filename in path on the filesystem.
+//
+// Returns nothing.
+Robot.prototype.loadFile = function(path, file) {
+  var error, e, script;
+  var ext = Path.extname(file);
+  var full = Path.join(path, Path.basename(file, ext));
+
+  if (require.extensions[ext]) {
+    try {
+      script = require(full);
+      if (typeof script === 'function') {
+        script(this);
+      } else {
+        return this.logger.warning("Expected " + full + " to assign a function to module.exports, got " + (typeof script));
+      }
+    } catch (e) {
+      error = e;
+      this.logger.error("Unable to load " + full + ": " + error.stack);
+      return process.exit(1);
+    }
+  }
+};
 
 module.exports = Robot;
