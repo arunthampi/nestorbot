@@ -11,6 +11,22 @@ describe('Robot', function() {
   })
 
   describe('Unit Tests', function() {
+    describe('#hear', function() {
+      it('registers a new listener directly', function() {
+        expect(this.robot.listeners).to.have.length(0);
+        this.robot.hear(/.*/, function() {});
+        expect(this.robot.listeners).to.have.length(1);
+      });
+    });
+
+    describe('#respond', function() {
+      it('registers a new listener directly', function() {
+        expect(this.robot.listeners).to.have.length(0);
+        this.robot.respond(/.*/, function() {});
+        expect(this.robot.listeners).to.have.length(1);
+      });
+    });
+
     describe('#respondPattern', function() {
       it('matches messages starting with robot\'s name', function() {
         var testMessage = this.robot.botId + ' message123';

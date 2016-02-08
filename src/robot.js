@@ -1,3 +1,6 @@
+var _ref = require('./listener'), Listener = _ref.Listener, TextListener = _ref.TextListener;
+var TextMessage = require('./message').TextMessage;
+
 // Robots receive messages from Nestor and dispatch them to matching listeners.
 //
 // teamId      - A String of the ID of the team that Hubot is serving
@@ -10,6 +13,7 @@ var Robot = function(teamId, botId, debugMode) {
   this.teamId = teamId;
   this.botId = botId;
   this.debugMode = debugMode;
+  this.listeners = [];
 };
 
 // Public: Build a regular expression that matches messages addressed
@@ -33,5 +37,33 @@ Robot.prototype.respondPattern = function(regex) {
   newRegex = new RegExp("[<]?[@]?" + this.botId + "(?:[^>]+>:)?\\s*(?:" + pattern + ")", modifiers);
   return newRegex;
 };
+
+// Public: Adds a Listener that attempts to match incoming messages based on
+// a Regex.
+//
+// regex    - A Regex that determines if the callback should be called.
+// options  - An Object of additional parameters keyed on extension name
+//            (optional).
+// callback - A Function that is called with a Response object.
+//
+// Returns nothing.
+Robot.prototype.hear = function(regex, options, callback) {
+  this.listeners.push(new TextListener(this, regex, options, callback));
+};
+
+// Public: Adds a Listener that attempts to match incoming messages directed
+// at the robot based on a Regex. All regexes treat patterns like they begin
+// with a '^'
+//
+// regex    - A Regex that determines if the callback should be called.
+// options  - An Object of additional parameters keyed on extension name
+//            (optional).
+// callback - A Function that is called with a Response object.
+//
+// Returns nothing.
+Robot.prototype.respond = function(regex, options, callback) {
+  this.hear(this.respondPattern(regex), options, callback);
+};
+
 
 module.exports = Robot;
