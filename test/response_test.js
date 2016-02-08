@@ -36,6 +36,7 @@ describe('Response', function() {
         it('should buffer responses in robot.toSend', function() {
           this.response.send('hello');
           expect(this.robot.toSend).to.eql(['hello']);
+          expect(this.response.message.done).to.be.true;
         });
       });
 
@@ -72,7 +73,10 @@ describe('Response', function() {
         });
 
         it('should make a request to the Nestor API to send a message back to the user', function(done) {
+          var _this = this;
+
           this.response.send('hello').then(function(data) {
+            expect(_this.response.message.done).to.be.true;
             expect(scope.isDone()).to.be.true;
             done();
           })
@@ -89,6 +93,7 @@ describe('Response', function() {
         it('should buffer responses in robot.toSend', function() {
           this.response.reply('hello');
           expect(this.robot.toReply).to.eql(['hello']);
+          expect(this.response.message.done).to.be.true;
         });
       });
 
@@ -125,7 +130,10 @@ describe('Response', function() {
         });
 
         it('should make a request to the Nestor API to send a message back to the user', function(done) {
+          var _this = this;
+
           this.response.reply('hello').then(function(data) {
+            expect(_this.response.message.done).to.be.true;
             expect(scope.isDone()).to.be.true;
             done();
           })

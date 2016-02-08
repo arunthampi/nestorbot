@@ -117,43 +117,75 @@ describe('Robot', function() {
         testMessage = new TextMessage(this.user, 'message123');
       });
 
-      context("callback don't return Promises", function() {
-        it('calls all registered listeners', function(done) {
-          var listener = {
-            callback: function(response) {}
-          };
-          sinon.spy(listener, 'callback');
-          this.robot.listeners = [listener, listener, listener, listener];
+      context("Unit Tests", function() {
+        context("callback don't return Promises", function() {
+          it('calls all registered listeners', function(done) {
+            var listener = {
+              callback: function(response) {}
+            };
+            sinon.spy(listener, 'callback');
+            this.robot.listeners = [listener, listener, listener, listener];
 
-          this.robot.receive(testMessage, function() {
-            expect(listener.callback).to.have.callCount(4);
-            done();
+            this.robot.receive(testMessage, function() {
+              expect(listener.callback).to.have.callCount(4);
+              done();
+            });
+          });
+        });
+
+        context("some of the callbacks return Promises", function() {
+          it('calls all registered listeners', function(done) {
+            var listener1 = {
+              callback: function(response) {}
+            };
+
+            var listener2 = {
+              callback: function(response) {
+                new Promise(function(resolve) {});
+              }
+            };
+            sinon.spy(listener1, 'callback');
+            sinon.spy(listener2, 'callback');
+            this.robot.listeners = [listener1, listener2, listener1, listener2];
+
+            this.robot.receive(testMessage, function() {
+              expect(listener1.callback).to.have.callCount(2);
+              expect(listener2.callback).to.have.callCount(2);
+              done();
+            });
           });
         });
       });
 
-      context("some of the callbacks return Promises", function() {
-        it('calls all registered listeners', function(done) {
-          var listener1 = {
-            callback: function(response) {}
-          };
+      context("Integration tests", function() {
+        var callback1, callback2;
 
-          var listener2 = {
-            callback: function(response) {
-              new Promise(function(resolve) {});
-            }
-          };
-          sinon.spy(listener1, 'callback');
-          sinon.spy(listener2, 'callback');
-          this.robot.listeners = [listener1, listener2, listener1, listener2];
+        context('debug mode', function() {
+          beforeEach(function() {
+            this.robot.debugMode = true;
+          });
 
-          this.robot.receive(testMessage, function() {
-            expect(listener1.callback).to.have.callCount(2);
-            expect(listener2.callback).to.have.callCount(2);
-            done();
+          context('two handlers with the same callback', function(done) {
+            beforeEach(function() {
+              callback1 = function(response) { return response.send('hello 1'); };
+              callback2 = function(response) { return response.send('hello 2'); };
+
+              this.robot.respond(/message123/, callback1);
+              this.robot.respond(/message123/, callback2);
+            });
+
+            it('should call callback1 and not callback2', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSend).to.eql(['hello 1']);
+                done();
+              });
+            });
           });
         });
+
       });
+
     });
   });
 });

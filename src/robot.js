@@ -110,23 +110,26 @@ Robot.prototype.loadFile = function(path, file) {
 //
 // Returns promise.
 Robot.prototype.receive = function(message, cb) {
-  var promises = [];
+  var _this = this;
+  var resp = new Response(_this, message);
 
-  for(var i in this.listeners) {
-    var listener = this.listeners[i];
+  Promise.each(this.listeners, function(listener, index, length) {
+    if(!resp.message.done) {
+      var reply = listener.callback(resp);
 
-    var resp = new Response(this, message);
-    reply = listener.callback(resp);
+      if(!(reply instanceof Promise)) {
+        reply = new Promise(function(resolve, reject) { resolve(); });
+      }
 
-    if(reply instanceof Promise) {
-    } else {
-      reply = new Promise(function(resp) {})
+      return reply;
     }
+  }).then(function() {
+    cb();
+  });
+};
 
-    promises.push(reply);
-  };
+Robot.prototype.__receive = function(listener, message) {
 
-  Promise.join(promises, cb);
 };
 
 module.exports = Robot;

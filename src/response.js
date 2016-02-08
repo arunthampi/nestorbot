@@ -41,6 +41,12 @@ Response.prototype.reply = function() {
   return this.__send(strings, true);
 };
 
+// Public: Tell the message to stop dispatching to listeners
+//
+// Returns nothing.
+Response.prototype.finish = function() {
+  return this.message.finish();
+};
 
 Response.prototype.__send = function(strings, reply) {
   // If robot is in debugMode, then don't actually send response back
@@ -51,7 +57,10 @@ Response.prototype.__send = function(strings, reply) {
     } else {
       this.robot.toSend = this.robot.toSend.concat(strings);
     }
+
+    this.finish();
   } else {
+    var _this = this;
     var authToken = process.env.__NESTOR_AUTH_TOKEN;
     var host = process.env.__NESTOR_API_HOST;
     if(host == null) {
@@ -79,6 +88,8 @@ Response.prototype.__send = function(strings, reply) {
       },
       method: 'POST',
       body: qs.stringify(params)
+    }).then(function(res) {
+      _this.message.finish();
     });
   }
 }
