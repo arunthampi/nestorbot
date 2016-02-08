@@ -1,6 +1,10 @@
 var chai = require('chai');
 var sinon = require('sinon');
+var Promise = require('bluebird');
+
 var Robot = require('../src/robot');
+var TextMessage = require('../src/message').TextMessage;
+var User = require('../src/user');
 
 chai.use(require('sinon-chai'));
 var expect = chai.expect;
@@ -8,6 +12,10 @@ var expect = chai.expect;
 describe('Robot', function() {
   beforeEach(function() {
     this.robot = new Robot('TDEADBEEF', 'UNESTORBOT1', false);
+    this.user = new User('1', {
+      name: 'nestorbottester',
+      room: 'CDEADBEEF1'
+    });
   })
 
   describe('Unit Tests', function() {
@@ -98,6 +106,52 @@ describe('Robot', function() {
           sinon.stub(this.robot.logger, 'warning');
           this.robot.loadFile('./scripts', 'test-script.js');
           expect(this.robot.logger.warning).to.have.been.called;
+        });
+      });
+    });
+
+    describe('#receive', function() {
+      var testMessage;
+
+      beforeEach(function() {
+        testMessage = new TextMessage(this.user, 'message123');
+      });
+
+      context("callback don't return Promises", function() {
+        it('calls all registered listeners', function(done) {
+          var listener = {
+            callback: function(response) {}
+          };
+          sinon.spy(listener, 'callback');
+          this.robot.listeners = [listener, listener, listener, listener];
+
+          this.robot.receive(testMessage, function() {
+            expect(listener.callback).to.have.callCount(4);
+            done();
+          });
+        });
+      });
+
+      context("some of the callbacks return Promises", function() {
+        it('calls all registered listeners', function(done) {
+          var listener1 = {
+            callback: function(response) {}
+          };
+
+          var listener2 = {
+            callback: function(response) {
+              new Promise(function(resolve) {});
+            }
+          };
+          sinon.spy(listener1, 'callback');
+          sinon.spy(listener2, 'callback');
+          this.robot.listeners = [listener1, listener2, listener1, listener2];
+
+          this.robot.receive(testMessage, function() {
+            expect(listener1.callback).to.have.callCount(2);
+            expect(listener2.callback).to.have.callCount(2);
+            done();
+          });
         });
       });
     });

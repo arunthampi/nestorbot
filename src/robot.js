@@ -1,7 +1,9 @@
 var _ref = require('./listener'), Listener = _ref.Listener, TextListener = _ref.TextListener;
 var TextMessage = require('./message').TextMessage;
+var Response = require('./response');
 var Path = require('path');
 var Log = require('log');
+var Promise = require('bluebird');
 
 // Robots receive messages from Nestor and dispatch them to matching listeners.
 //
@@ -96,6 +98,32 @@ Robot.prototype.loadFile = function(path, file) {
       return process.exit(1);
     }
   }
+};
+
+// Public: Passes the given message to any interested Listeners
+//
+// message - A Message instance. Listeners can flag this message as 'done' to
+//           prevent further execution.
+//
+// Returns promise.
+Robot.prototype.receive = function(message, cb) {
+  var promises = [];
+
+  for(var i in this.listeners) {
+    var listener = this.listeners[i];
+
+    var resp = new Response(this, message);
+    reply = listener.callback(resp);
+
+    if(reply instanceof Promise) {
+    } else {
+      reply = new Promise(function(resp) {})
+    }
+
+    promises.push(reply);
+  };
+
+  Promise.join(promises, cb);
 };
 
 module.exports = Robot;
