@@ -15,13 +15,17 @@
     "hubot",
     "botkit"
   ],
+  "dependencies": {
+    "bluebird": "~3.2.2",
+    "request-promise": "~2.0.0"
+  },
   "devDependencies": {
     "mocha": "^2.1.0",
     "log": "1.4.0",
     "sinon-chai": "^2.8.0",
     "sinon":"~1.17.0",
     "chai":"~2.1.0",
-    "bluebird": "~3.2.2"
+    "nock": "~7.0.2"
   },
   "author": "Arun Thampi",
   "license": "MIT",

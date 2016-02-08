@@ -18,6 +18,9 @@ var Robot = function(teamId, botId, debugMode) {
   this.botId = botId;
   this.debugMode = debugMode;
   this.listeners = [];
+  this.toSend = [];
+  this.toReply = [];
+
   if(this.debugMode == true) {
     process.env.NESTOR_LOG_LEVEL = 'debug';
   }
