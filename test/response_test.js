@@ -1,6 +1,7 @@
 var qs = require('qs');
 var chai = require('chai');
 var sinon = require('sinon');
+var shell = require('shelljs/shell');
 
 var User = require('../src/user');
 var Robot = require('../src/robot');
@@ -38,32 +39,34 @@ describe('Response', function() {
         });
       });
 
-      context.skip('when not in debug mode', function() {
-        var scope;
+      context('when not in debug mode', function() {
+        var stub, sandbox;
 
         beforeEach(function() {
-          port = 55999;
-          server = fork(__dirname + '/fake-server');
-
           this.robot.debugMode = false;
           process.env.__NESTOR_AUTH_TOKEN = 'authToken';
-          process.env.__NESTOR_API_HOST = 'http://localhost:' + port;
+          sandbox = sinon.sandbox.create();
+          stub = sandbox.stub(shell, 'exec');
+          var params = qs.stringify({
+            message: {
+              user_uid: 'UDEADBEEF1',
+              channel_uid: 'CDEADBEEF1',
+              strings: '["hello"]',
+              reply: false
+            }
+          })
+
+          cmd = 'curl -sL -w "%{http_code}" -H "Authorization: authToken" https://v2.asknestor.me/teams/TDEADBEEF/messages -d "' + params + '" -o /dev/null'
+          stub.withArgs(cmd).returns({stdout: "\n202"});
         });
 
-        it('should make a request to the Nestor API to send a message back to the user', function(done) {
-          var _this = this;
+        afterEach(function() {
+          sandbox.restore();
+        });
 
-          server.on('message', function(m) {
-            if(m === 'started') {
-              res = _this.response.send('hello');
-              expect(res).to.be.true;
-              server.send(JSON.stringify({command: 'stop'}));
-            } else {
-              done();
-            }
-          });
-
-          server.send(JSON.stringify({command: 'start', port: port, url: '/teams/TDEADBEEF/messages', payload: JSON.stringify({ok: true}), statusCode: 202}));
+        it('should make a request to the Nestor API to send a message back to the user', function() {
+          res = this.response.send('hello');
+          expect(res).to.be.true;
         });
       });
     });
@@ -81,32 +84,34 @@ describe('Response', function() {
         });
       });
 
-      context.skip('when not in debug mode', function() {
-        var scope, port, server;
+      context('when not in debug mode', function() {
+        var stub, sandbox;
 
         beforeEach(function() {
-          port = 55999;
-          server = fork(__dirname + '/fake-server');
-
           this.robot.debugMode = false;
           process.env.__NESTOR_AUTH_TOKEN = 'authToken';
-          process.env.__NESTOR_API_HOST = 'http://localhost:' + port;
+          sandbox = sinon.sandbox.create();
+          stub = sandbox.stub(shell, 'exec');
+          var params = qs.stringify({
+            message: {
+              user_uid: 'UDEADBEEF1',
+              channel_uid: 'CDEADBEEF1',
+              strings: '["hello"]',
+              reply: true
+            }
+          })
+
+          cmd = 'curl -sL -w "%{http_code}" -H "Authorization: authToken" https://v2.asknestor.me/teams/TDEADBEEF/messages -d "' + params + '" -o /dev/null'
+          stub.withArgs(cmd).returns({stdout: "\n202"});
         });
 
-        it('should make a request to the Nestor API to send a message back to the user', function(done) {
-          var _this = this;
+        afterEach(function() {
+          sandbox.restore();
+        });
 
-          server.on('message', function(m) {
-            if(m === 'started') {
-              res = _this.response.reply('hello');
-              expect(res).to.be.true;
-              server.send(JSON.stringify({command: 'stop'}));
-            } else {
-              done();
-            }
-          });
-
-          server.send(JSON.stringify({command: 'start', port: port, url: '/teams/TDEADBEEF/messages', payload: JSON.stringify({ok: true}), statusCode: 202}));
+        it('should make a request to the Nestor API to send a message back to the user', function() {
+          res = this.response.reply('hello');
+          expect(res).to.be.true;
         });
       });
     });

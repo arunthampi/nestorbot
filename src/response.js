@@ -1,4 +1,5 @@
 var qs = require('qs');
+var shell = require('shelljs/shell');
 
 var Response,
   __slice = [].slice;
@@ -53,26 +54,30 @@ Response.prototype.__send = function(strings, reply) {
   if(this.robot.debugMode) {
     this.robot.toSend = this.robot.toSend.concat({strings: strings, reply: reply });
     return true;
-  } else {
-    var authToken = process.env.__NESTOR_AUTH_TOKEN;
-    var host = process.env.__NESTOR_API_HOST;
-    if (host == null) {
-      host = "https://v2.asknestor.me";
-    }
-    var url = host + "/teams/" + this.robot.teamId + "/messages";
-
-    if(this.message.user == null || this.message.room == null || strings.length == 0) {
-      return false;
-    }
-
-    params = qs.stringify({
-      message: {
-        user_uid: this.message.user.id,
-        channel_uid: this.message.room,
-        strings: JSON.stringify(strings),
-        reply: reply
-      }
-    })
   }
+
+  var authToken = process.env.__NESTOR_AUTH_TOKEN;
+  var host = process.env.__NESTOR_API_HOST;
+  if (host == null) {
+    host = "https://v2.asknestor.me";
+  }
+  var url = host + "/teams/" + this.robot.teamId + "/messages";
+
+  if(this.message.user == null || this.message.room == null || strings.length == 0) {
+    return false;
+  }
+
+  params = qs.stringify({
+    message: {
+      user_uid: this.message.user.id,
+      channel_uid: this.message.room,
+      strings: JSON.stringify(strings),
+      reply: reply
+    }
+  })
+
+  cmd = 'curl -sL -w "%{http_code}" -H "Authorization: ' + authToken + '" ' + url + ' -d "' + params + '" -o /dev/null'
+  output = shell.exec(cmd).stdout.trim()
+  return (output == '202')
 }
 module.exports = Response;
