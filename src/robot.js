@@ -78,7 +78,9 @@ Robot.prototype.hear = function(regex, options, callback) {
 //
 // Returns nothing.
 Robot.prototype.respond = function(regex, options, callback) {
-  this.hear(this.respondPattern(regex), options, callback);
+  if(!this.debugMode) { regex = this.respondPattern(regex); }
+
+  this.hear(regex, options, callback);
 };
 
 // Public: Loads a file in path.
