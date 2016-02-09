@@ -52,12 +52,7 @@ Response.prototype.__send = function(strings, reply) {
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
-    if(reply) {
-      this.robot.toReply = this.robot.toReply.concat(strings);
-    } else {
-      this.robot.toSend = this.robot.toSend.concat(strings);
-    }
-
+    this.robot.toSend = this.robot.toSend.concat({strings: strings, reply: reply });
     return true;
   } else {
     var authToken = process.env.__NESTOR_AUTH_TOKEN;

@@ -185,7 +185,7 @@ describe('Robot', function() {
           it('should call callback1 and not callback2', function(done) {
             var _this = this;
             this.robot.receive(testMessage, function() {
-              expect(_this.robot.toSend).to.eql(['hello 1']);
+              expect(_this.robot.toSend).to.eql([{strings: ['hello 1'], reply: false}]);
               done();
             });
           });
@@ -204,7 +204,7 @@ describe('Robot', function() {
           it('should call callback1 and not callback2', function(done) {
             var _this = this;
             this.robot.receive(testMessage, function() {
-              expect(_this.robot.toSend).to.eql(['hello 2']);
+              expect(_this.robot.toSend).to.eql([{strings: ['hello 2'], reply: false}]);
               done();
             });
           });
@@ -238,7 +238,7 @@ describe('Robot', function() {
           it('should call callback1 and wait for the http request to complete', function(done) {
             var _this = this;
             this.robot.receive(testMessage, function() {
-              expect(_this.robot.toSend).to.eql(['technoweenie']);
+              expect(_this.robot.toSend).to.eql([{strings: ['technoweenie'], reply: false}]);
               done();
             });
           });

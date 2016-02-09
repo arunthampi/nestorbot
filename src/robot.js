@@ -23,7 +23,6 @@ var Robot = function(teamId, botId, debugMode) {
   this.debugMode = debugMode;
   this.listeners = [];
   this.toSend = [];
-  this.toReply = [];
   this.globalHttpOptions = {};
 
   if(this.debugMode == true) {
