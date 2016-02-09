@@ -114,7 +114,8 @@ Robot.prototype.receive = function(message, cb) {
   var resp = new Response(_this, message);
 
   Promise.each(this.listeners, function(listener, index, length) {
-    if(!resp.message.done) {
+    if(!resp.message.done && (match = listener.matcher(message))) {
+      resp.match = match;
       var reply = listener.callback(resp);
 
       if(!(reply instanceof Promise)) {

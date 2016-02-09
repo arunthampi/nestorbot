@@ -111,81 +111,56 @@ describe('Robot', function() {
     });
 
     describe('#receive', function() {
-      var testMessage;
+      var testMessage, callback1, callback2;
 
       beforeEach(function() {
         testMessage = new TextMessage(this.user, 'message123');
       });
 
-      context("Unit Tests", function() {
-        context("callback don't return Promises", function() {
-          it('calls all registered listeners', function(done) {
-            var listener = {
-              callback: function(response) {}
-            };
-            sinon.spy(listener, 'callback');
-            this.robot.listeners = [listener, listener, listener, listener];
-
-            this.robot.receive(testMessage, function() {
-              expect(listener.callback).to.have.callCount(4);
-              done();
-            });
-          });
+      context('debug mode', function() {
+        beforeEach(function() {
+          this.robot.debugMode = true;
+          this.robot.listeners = [];
         });
 
-        context("some of the callbacks return Promises", function() {
-          it('calls all registered listeners', function(done) {
-            var listener1 = {
-              callback: function(response) {}
-            };
-
-            var listener2 = {
-              callback: function(response) {
-                new Promise(function(resolve) {});
-              }
-            };
-            sinon.spy(listener1, 'callback');
-            sinon.spy(listener2, 'callback');
-            this.robot.listeners = [listener1, listener2, listener1, listener2];
-
-            this.robot.receive(testMessage, function() {
-              expect(listener1.callback).to.have.callCount(2);
-              expect(listener2.callback).to.have.callCount(2);
-              done();
-            });
-          });
-        });
-      });
-
-      context("Integration tests", function() {
-        var callback1, callback2;
-
-        context('debug mode', function() {
+        context('two handlers with the same callback', function(done) {
           beforeEach(function() {
-            this.robot.debugMode = true;
+            callback1 = function(response) { return response.send('hello 1'); };
+            callback2 = function(response) { return response.send('hello 2'); };
+
+            this.robot.hear(/message123/, callback1);
+            this.robot.hear(/message123/, callback2);
           });
 
-          context('two handlers with the same callback', function(done) {
-            beforeEach(function() {
-              callback1 = function(response) { return response.send('hello 1'); };
-              callback2 = function(response) { return response.send('hello 2'); };
-
-              this.robot.respond(/message123/, callback1);
-              this.robot.respond(/message123/, callback2);
+          it('should call callback1 and not callback2', function(done) {
+            var _this = this;
+            this.robot.receive(testMessage, function() {
+              expect(_this.robot.toSend).to.eql(['hello 1']);
+              done();
             });
+          });
+        });
 
-            it('should call callback1 and not callback2', function(done) {
-              var _this = this;
-              this.robot.receive(testMessage, function() {
-                expect(_this.robot.toSend).to.eql(['hello 1']);
-                done();
-              });
+        context('only one of the handlers match', function(done) {
+          beforeEach(function() {
+            callback1 = function(response) { return response.send('hello 1'); };
+            callback2 = function(response) { return response.send('hello 2'); };
+
+            this.robot.respond(/message456/, callback1);
+            this.robot.hear(/message123/, callback2);
+          });
+
+
+          it('should call callback1 and not callback2', function(done) {
+            var _this = this;
+            this.robot.receive(testMessage, function() {
+              expect(_this.robot.toSend).to.eql(['hello 2']);
+              done();
             });
           });
         });
 
       });
-
     });
   });
 });
