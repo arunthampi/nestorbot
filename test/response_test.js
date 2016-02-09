@@ -1,14 +1,11 @@
 var qs = require('qs');
 var chai = require('chai');
 var sinon = require('sinon');
-var request = require('sync-request');
 
 var User = require('../src/user');
 var Robot = require('../src/robot');
 var TextMessage = require('../src/message').TextMessage;
 var Response = require('../src/response');
-var child = require('child_process'),
-    fork = child.fork;
 
 chai.use(require('sinon-chai'));
 expect = chai.expect;

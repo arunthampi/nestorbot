@@ -1,6 +1,5 @@
 var chai = require('chai');
 var sinon = require('sinon');
-var Promise = require('bluebird');
 var nock = require('nock');
 
 var Robot = require('../src/robot');

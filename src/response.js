@@ -1,5 +1,4 @@
 var qs = require('qs');
-var request = require('sync-request');
 
 var Response,
   __slice = [].slice;
@@ -66,23 +65,14 @@ Response.prototype.__send = function(strings, reply) {
       return false;
     }
 
-    params = {
+    params = qs.stringify({
       message: {
         user_uid: this.message.user.id,
         channel_uid: this.message.room,
         strings: JSON.stringify(strings),
         reply: reply
       }
-    }
-
-    res = request('POST', url, {
-      headers: {
-        'Authorization': authToken
-      },
-      body: qs.stringify(params)
-    });
-
-    return (res.statusCode == 202);
+    })
   }
 }
 module.exports = Response;
