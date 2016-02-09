@@ -52,6 +52,10 @@ Response.prototype.__send = function(strings, reply) {
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
+    if(this.message.done) {
+      return;
+    }
+
     if(reply) {
       this.robot.toReply = this.robot.toReply.concat(strings);
     } else {
@@ -60,6 +64,10 @@ Response.prototype.__send = function(strings, reply) {
 
     this.finish();
   } else {
+    if(this.message.done) {
+      return;
+    }
+
     var _this = this;
     var authToken = process.env.__NESTOR_AUTH_TOKEN;
     var host = process.env.__NESTOR_API_HOST;
