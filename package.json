@@ -16,9 +16,8 @@
     "botkit"
   ],
   "dependencies": {
-    "bluebird": "~3.2.2",
-    "request-promise": "~2.0.0"
     "scoped-http-client": "0.11.0",
+    "sync-request": "3.0.0"
   },
   "devDependencies": {
     "mocha": "^2.1.0",
@@ -26,7 +25,10 @@
     "sinon-chai": "^2.8.0",
     "sinon":"~1.17.0",
     "chai":"~2.1.0",
-    "nock": "~7.0.2"
+    "nock": "~7.0.2",
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "morgan": "^1.6.1"
   },
   "author": "Arun Thampi",
   "license": "MIT",

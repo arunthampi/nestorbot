@@ -1,5 +1,5 @@
 var qs = require('qs');
-var rp = require('request-promise');
+var request = require('sync-request');
 
 var Response,
   __slice = [].slice;
@@ -22,7 +22,7 @@ var Response = function Response(robot, message, match) {
 // strings - One or more strings to be posted. The order of these strings
 //           should be kept intact.
 //
-// Returns nothing.
+// Returns boolean flag denoting whether the call was successfully
 Response.prototype.send = function() {
   var strings;
   strings = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
@@ -34,7 +34,7 @@ Response.prototype.send = function() {
 // strings - One or more strings to be posted. The order of these strings
 //           should be kept intact.
 //
-// Returns nothing.
+// Returns boolean flag denoting whether the call was successfully
 Response.prototype.reply = function() {
   var strings;
   strings = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
@@ -52,32 +52,23 @@ Response.prototype.__send = function(strings, reply) {
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
-    if(this.message.done) {
-      return;
-    }
-
     if(reply) {
       this.robot.toReply = this.robot.toReply.concat(strings);
     } else {
       this.robot.toSend = this.robot.toSend.concat(strings);
     }
 
-    this.finish();
+    return true;
   } else {
-    if(this.message.done) {
-      return;
-    }
-
-    var _this = this;
     var authToken = process.env.__NESTOR_AUTH_TOKEN;
     var host = process.env.__NESTOR_API_HOST;
-    if(host == null) {
+    if (host == null) {
       host = "https://v2.asknestor.me";
     }
     var url = host + "/teams/" + this.robot.teamId + "/messages";
 
     if(this.message.user == null || this.message.room == null || strings.length == 0) {
-      return;
+      return false;
     }
 
     params = {
@@ -89,16 +80,14 @@ Response.prototype.__send = function(strings, reply) {
       }
     }
 
-    return rp({
-      uri: url,
+    res = request('POST', url, {
       headers: {
         'Authorization': authToken
       },
-      method: 'POST',
       body: qs.stringify(params)
-    }).then(function(res) {
-      _this.message.finish();
     });
+
+    return (res.statusCode == 202);
   }
 }
 module.exports = Response;

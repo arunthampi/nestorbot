@@ -4,7 +4,6 @@ var HttpClient = require('scoped-http-client');
 var Response = require('./response');
 var Path = require('path');
 var Log = require('log');
-var Promise = require('bluebird');
 
 var __hasProp = {}.hasOwnProperty,
     __slice = [].slice,
@@ -151,28 +150,45 @@ Robot.prototype.http = function(url, options) {
 //           prevent further execution.
 //
 // Returns promise.
-Robot.prototype.receive = function(message, cb) {
+Robot.prototype.receive = function(message, done) {
   var _this = this;
   var resp = new Response(_this, message);
+  var listener = null;
 
-  Promise.each(this.listeners, function(listener, index, length) {
-    if(!resp.message.done && (match = listener.matcher(message))) {
+  for(var i in this.listeners) {
+    l = this.listeners[i];
+    if (match = l.matcher(message)) {
       resp.match = match;
-      var reply = listener.callback(resp);
-
-      if(!(reply instanceof Promise)) {
-        reply = new Promise(function(resolve, reject) { resolve(); });
-      }
-
-      return reply;
+      listener = l;
+      break;
     }
-  }).then(function() {
-    cb();
-  });
+  }
+
+  if(listener !== null) {
+    if(listener.callback.length == 1) {
+      listener.callback(resp);
+      done();
+    } else {
+      listener.callback(resp, done);
+    }
+  }
 };
 
-Robot.prototype.__receive = function(listener, message) {
-
+// Private: Extend obj with objects passed as additional args.
+//
+// Returns the original object with updated changes.
+Robot.prototype.extend = function() {
+  var i, key, len, obj, source, sources, value;
+  obj = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+  for (i = 0, len = sources.length; i < len; i++) {
+    source = sources[i];
+    for (key in source) {
+      if (!__hasProp.call(source, key)) continue;
+      value = source[key];
+      obj[key] = value;
+    }
+  }
+  return obj;
 };
 
 module.exports = Robot;

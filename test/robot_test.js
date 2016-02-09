@@ -1,6 +1,7 @@
 var chai = require('chai');
 var sinon = require('sinon');
 var Promise = require('bluebird');
+var nock = require('nock');
 
 var Robot = require('../src/robot');
 var TextMessage = require('../src/message').TextMessage;
@@ -174,8 +175,8 @@ describe('Robot', function() {
 
         context('two handlers with the same callback', function(done) {
           beforeEach(function() {
-            callback1 = function(response) { return response.send('hello 1'); };
-            callback2 = function(response) { return response.send('hello 2'); };
+            callback1 = function(response) { response.send('hello 1'); };
+            callback2 = function(response) { response.send('hello 2'); };
 
             this.robot.hear(/message123/, callback1);
             this.robot.hear(/message123/, callback2);
@@ -192,8 +193,8 @@ describe('Robot', function() {
 
         context('only one of the handlers match', function(done) {
           beforeEach(function() {
-            callback1 = function(response) { return response.send('hello 1'); };
-            callback2 = function(response) { return response.send('hello 2'); };
+            callback1 = function(response) { response.send('hello 1'); };
+            callback2 = function(response) { response.send('hello 2'); };
 
             this.robot.respond(/message456/, callback1);
             this.robot.hear(/message123/, callback2);
@@ -209,6 +210,39 @@ describe('Robot', function() {
           });
         });
 
+        context('handler has an asynchronous function', function(done) {
+          beforeEach(function() {
+            nock.disableNetConnect();
+            nock('https://api.github.com', {
+                    reqheaders: {
+                      'accept': 'application/json'
+                    }
+                  }).
+                  get('/user/show/technoweenie').
+                  reply(200, JSON.stringify({user: 'technoweenie'}));
+
+            callback1 = function(response, complete) {
+              response.robot.http('https://api.github.com').
+                             header('accept', 'application/json').
+                             path('user/show/technoweenie')
+                             .get()(function(err, resp, body) {
+                               r = JSON.parse(body);
+                               response.send(r['user']);
+                               complete();
+                             });
+            };
+
+            this.robot.hear(/message123/, callback1);
+          });
+
+          it('should call callback1 and wait for the http request to complete', function(done) {
+            var _this = this;
+            this.robot.receive(testMessage, function() {
+              expect(_this.robot.toSend).to.eql(['technoweenie']);
+              done();
+            });
+          });
+        });
       });
     });
   });
