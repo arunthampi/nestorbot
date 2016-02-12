@@ -49,7 +49,7 @@ Robot.prototype.respondPattern = function(regex) {
 
   var pattern = re.join('/');
 
-  newRegex = new RegExp("[<]?[@]?" + this.botId + "(?:[^>]+>:)?\\s*(?:" + pattern + ")", modifiers);
+  newRegex = new RegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:\\s*(?:" + pattern + ")", modifiers);
   return newRegex;
 };
 

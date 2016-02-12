@@ -86,7 +86,7 @@ describe('Robot', function() {
 
     describe('#respondPattern', function() {
       it('matches messages starting with robot\'s name', function() {
-        var testMessage = this.robot.botId + ' message123';
+        var testMessage = "<@" + this.robot.botId + '>: message123';
         var testRegex = /(.*)/;
         var pattern = this.robot.respondPattern(testRegex);
         expect(testMessage).to.match(pattern);
