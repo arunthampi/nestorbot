@@ -53,7 +53,8 @@ describe('Response', function() {
               channel_uid: 'CDEADBEEF1',
               strings: '["hello"]',
               reply: false
-            }
+            },
+            format: 'json'
           })
 
           cmd = 'curl -sL -w "%{http_code}" -H "Authorization: authToken" https://v2.asknestor.me/teams/TDEADBEEF/messages -d "' + params + '" -o /dev/null'
@@ -98,7 +99,8 @@ describe('Response', function() {
               channel_uid: 'CDEADBEEF1',
               strings: '["hello"]',
               reply: true
-            }
+            },
+            format: 'json'
           })
 
           cmd = 'curl -sL -w "%{http_code}" -H "Authorization: authToken" https://v2.asknestor.me/teams/TDEADBEEF/messages -d "' + params + '" -o /dev/null'

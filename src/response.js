@@ -73,7 +73,8 @@ Response.prototype.__send = function(strings, reply) {
       channel_uid: this.message.room,
       strings: JSON.stringify(strings),
       reply: reply
-    }
+    },
+    format: 'json'
   })
 
   cmd = 'curl -sL -w "%{http_code}" -H "Authorization: ' + authToken + '" ' + url + ' -d "' + params + '" -o /dev/null'
