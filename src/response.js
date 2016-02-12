@@ -1,6 +1,3 @@
-var qs = require('qs');
-var shell = require('shelljs/shell');
-
 var Response,
   __slice = [].slice;
 

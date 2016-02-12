@@ -17,7 +17,6 @@
   ],
   "dependencies": {
     "scoped-http-client": "0.11.0",
-    "qs": "~6.0.2",
     "log": "1.4.0"
   },
   "devDependencies": {
