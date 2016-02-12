@@ -23,10 +23,8 @@ var Response = function Response(robot, message, match) {
 //           should be kept intact.
 //
 // Returns boolean flag denoting whether the call was successfully
-Response.prototype.send = function() {
-  var strings;
-  strings = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-  return this.__send(strings, false);
+Response.prototype.send = function(strings, callback) {
+  this.__send(strings, false, callback);
 };
 
 // Public: Posts a message mentioning the current user.
@@ -35,10 +33,8 @@ Response.prototype.send = function() {
 //           should be kept intact.
 //
 // Returns boolean flag denoting whether the call was successfully
-Response.prototype.reply = function() {
-  var strings;
-  strings = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-  return this.__send(strings, true);
+Response.prototype.reply = function(strings, callback) {
+  this.__send(strings, true, callback);
 };
 
 // Public: Tell the message to stop dispatching to listeners
@@ -48,12 +44,24 @@ Response.prototype.finish = function() {
   return this.message.finish();
 };
 
-Response.prototype.__send = function(strings, reply) {
+Response.prototype.__send = function(strings, reply, callback) {
+  if(callback === undefined) {
+    callback = function(){};
+  }
+
+  stringsPayload = [];
+
+  if(strings instanceof Array) {
+    stringsPayload = stringsPayload.concat(strings);
+  } else {
+    stringsPayload.push(strings);
+  }
+
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
-    this.robot.toSend = this.robot.toSend.concat({strings: strings, reply: reply });
-    return true;
+    this.robot.toSend = this.robot.toSend.concat({strings: stringsPayload, reply: reply });
+    callback();
   }
 
   var authToken = process.env.__NESTOR_AUTH_TOKEN;
@@ -64,21 +72,23 @@ Response.prototype.__send = function(strings, reply) {
   var url = host + "/teams/" + this.robot.teamId + "/messages";
 
   if(this.message.user == null || this.message.room == null || strings.length == 0) {
-    return false;
+    callback();
   }
 
-  params = qs.stringify({
+  params = JSON.stringify({
     message: {
       user_uid: this.message.user.id,
       channel_uid: this.message.room,
       strings: JSON.stringify(strings),
       reply: reply
-    },
-    format: 'json'
-  })
+    }
+  });
 
-  cmd = 'curl -sL -w "%{http_code}" -H "Authorization: ' + authToken + '" ' + url + ' -d "' + params + '" -o /dev/null'
-  output = shell.exec(cmd).stdout.trim()
-  return (output == '202')
+  this.robot.http(url).
+    header('Authorization', authToken).
+    header('Content-Type', 'application/json').
+    post(params)(function(err, resp, body) {
+      callback();
+    });
 }
 module.exports = Response;

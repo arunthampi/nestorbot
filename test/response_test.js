@@ -1,7 +1,7 @@
 var qs = require('qs');
 var chai = require('chai');
 var sinon = require('sinon');
-var shell = require('shelljs/shell');
+var nock = require('nock');
 
 var User = require('../src/user');
 var Robot = require('../src/robot');
@@ -33,41 +33,73 @@ describe('Response', function() {
         });
 
         it('should buffer responses in robot.toSend', function() {
-          res = this.response.send('hello');
+          this.response.send('hello');
           expect(this.robot.toSend).to.eql([{strings:['hello'], reply: false}]);
-          expect(res).to.be.true;
         });
       });
 
       context('when not in debug mode', function() {
-        var stub, sandbox;
+        var params, scope;
 
         beforeEach(function() {
           this.robot.debugMode = false;
           process.env.__NESTOR_AUTH_TOKEN = 'authToken';
-          sandbox = sinon.sandbox.create();
-          stub = sandbox.stub(shell, 'exec');
-          var params = qs.stringify({
-            message: {
-              user_uid: 'UDEADBEEF1',
-              channel_uid: 'CDEADBEEF1',
-              strings: '["hello"]',
-              reply: false
-            },
-            format: 'json'
-          })
-
-          cmd = 'curl -sL -w "%{http_code}" -H "Authorization: authToken" https://v2.asknestor.me/teams/TDEADBEEF/messages -d "' + params + '" -o /dev/null'
-          stub.withArgs(cmd).returns({stdout: "\n202"});
         });
 
-        afterEach(function() {
-          sandbox.restore();
+        context('with only a single string as the payload', function() {
+          beforeEach(function() {
+            params = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello"]',
+                reply: false
+              }
+            }
+
+            scope = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function() {
+            this.response.send('hello', function() {
+              expect(scope.isDone()).to.be.true;
+            });
+          });
         });
 
-        it('should make a request to the Nestor API to send a message back to the user', function() {
-          res = this.response.send('hello');
-          expect(res).to.be.true;
+        context('with multiple strings as the payload', function() {
+          beforeEach(function() {
+            params = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello 1", "hello 2"]',
+                reply: false
+              }
+            }
+
+            scope = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function() {
+            this.response.send(['hello 1', 'hello 2'], function() {
+              expect(scope.isDone()).to.be.true;
+            });
+          });
         });
       });
     });
@@ -79,41 +111,73 @@ describe('Response', function() {
         });
 
         it('should buffer responses in robot.toSend', function() {
-          res = this.response.reply('hello');
+          this.response.reply('hello');
           expect(this.robot.toSend).to.eql([{strings:['hello'], reply: true}]);
-          expect(res).to.be.true;
         });
       });
 
       context('when not in debug mode', function() {
-        var stub, sandbox;
+        var params, scope;
 
         beforeEach(function() {
           this.robot.debugMode = false;
           process.env.__NESTOR_AUTH_TOKEN = 'authToken';
-          sandbox = sinon.sandbox.create();
-          stub = sandbox.stub(shell, 'exec');
-          var params = qs.stringify({
-            message: {
-              user_uid: 'UDEADBEEF1',
-              channel_uid: 'CDEADBEEF1',
-              strings: '["hello"]',
-              reply: true
-            },
-            format: 'json'
-          })
-
-          cmd = 'curl -sL -w "%{http_code}" -H "Authorization: authToken" https://v2.asknestor.me/teams/TDEADBEEF/messages -d "' + params + '" -o /dev/null'
-          stub.withArgs(cmd).returns({stdout: "\n202"});
         });
 
-        afterEach(function() {
-          sandbox.restore();
+        context('with only one string as the payload', function() {
+          beforeEach(function() {
+            params = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello"]',
+                reply: true
+              }
+            }
+
+            scope = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function() {
+            this.response.reply('hello', function() {
+              expect(scope.isDone()).to.be.true;
+            });
+          });
         });
 
-        it('should make a request to the Nestor API to send a message back to the user', function() {
-          res = this.response.reply('hello');
-          expect(res).to.be.true;
+        context('with multiple strings as the payload', function() {
+          beforeEach(function() {
+            params = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello 1", "hello 2"]',
+                reply: true
+              }
+            }
+
+            scope = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function() {
+            this.response.reply(['hello 1', 'hello 2'], function() {
+              expect(scope.isDone()).to.be.true;
+            });
+          });
         });
       });
     });
