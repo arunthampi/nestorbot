@@ -17,7 +17,8 @@
   ],
   "dependencies": {
     "scoped-http-client": "0.11.0",
-    "log": "1.4.0"
+    "log": "1.4.0",
+    "promise": "7.1.1"
   },
   "devDependencies": {
     "mocha": "^2.1.0",

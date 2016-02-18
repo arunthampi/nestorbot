@@ -178,6 +178,116 @@ describe('Response', function() {
             });
           });
         });
+
+        context('with multiple calls to msg.reply (with promises)', function() {
+          var scope1, scope2, params1, params2;
+
+          beforeEach(function() {
+            params1 = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello 1"]',
+                reply: true
+              }
+            }
+
+            params2 = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello 2"]',
+                reply: true
+              }
+            }
+
+            scope1 = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params1)
+                .reply(202);
+
+            scope2 = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params2)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function(done) {
+            var _this = this;
+
+            _this.response.reply('hello 1').
+            then(function() {
+              _this.response.reply('hello 2');
+            }).
+            then(function() {
+              expect(scope1.isDone()).to.be.true;
+              expect(scope2.isDone()).to.be.true;
+              done();
+            });
+          });
+        });
+
+        context('with multiple calls to msg.reply (with callback)', function() {
+          var scope1, scope2, params1, params2;
+
+          beforeEach(function() {
+            params1 = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello 1"]',
+                reply: true
+              }
+            }
+
+            params2 = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                strings: '["hello 2"]',
+                reply: true
+              }
+            }
+
+            scope1 = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params1)
+                .reply(202);
+
+            scope2 = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params2)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function(done) {
+            var _this = this;
+
+            _this.response.reply('hello 1', function() {
+              _this.response.reply('hello 2', function() {
+                expect(scope1.isDone()).to.be.true;
+                expect(scope2.isDone()).to.be.true;
+                done();
+              });
+            });
+          });
+        });
       });
     });
   });
