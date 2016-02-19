@@ -51,7 +51,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello"]',
+                strings: (new Buffer('hello')).toString('base64'),
                 reply: false
               }
             }
@@ -79,7 +79,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello 1", "hello 2"]',
+                strings: new Buffer("hello 1\nhello 2").toString('base64'),
                 reply: false
               }
             }
@@ -129,7 +129,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello"]',
+                strings: new Buffer('hello').toString('base64'),
                 reply: true
               }
             }
@@ -157,7 +157,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello 1", "hello 2"]',
+                strings: new Buffer("hello 1\nhello 2").toString('base64'),
                 reply: true
               }
             }
@@ -187,7 +187,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello 1"]',
+                strings: new Buffer('hello 1').toString('base64'),
                 reply: true
               }
             }
@@ -196,7 +196,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello 2"]',
+                strings: new Buffer("hello 2").toString('base64'),
                 reply: true
               }
             }
@@ -243,7 +243,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello 1"]',
+                strings: new Buffer("hello 1").toString('base64'),
                 reply: true
               }
             }
@@ -252,7 +252,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: '["hello 2"]',
+                strings: new Buffer("hello 2").toString('base64'),
                 reply: true
               }
             }

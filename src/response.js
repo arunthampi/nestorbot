@@ -76,7 +76,7 @@ Response.prototype.__send = function(strings, reply, callback) {
     message: {
       user_uid: this.message.user.id,
       channel_uid: this.message.room,
-      strings: JSON.stringify(stringsPayload),
+      strings: new Buffer(stringsPayload.join("\n")).toString('base64'),
       reply: reply
     }
   });
