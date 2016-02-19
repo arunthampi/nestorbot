@@ -166,11 +166,25 @@ Robot.prototype.receive = function(message, done) {
   }
 
   if(listener !== null) {
-    if(listener.callback.length == 1) {
-      listener.callback(resp);
-      done();
+    var missingEnv = [];
+    requiredEnv = this.requiredEnv || {}
+
+    for(var prop in requiredEnv) {
+      if(requiredEnv[prop] == true && (!(prop in process.env) || process.env[prop] == "")) {
+        missingEnv.push(prop);
+      }
+    }
+
+    if(missingEnv.length > 0) {
+      var strings = ["You need to set the following environment variables: " + missingEnv.join(', ')];
+      resp.reply(strings, done);
     } else {
-      listener.callback(resp, done);
+      if(listener.callback.length == 1) {
+        listener.callback(resp);
+        done();
+      } else {
+        listener.callback(resp, done);
+      }
     }
   }
 };

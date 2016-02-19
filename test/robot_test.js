@@ -209,6 +209,56 @@ describe('Robot', function() {
           });
         });
 
+        context('there are required env variables', function() {
+          beforeEach(function() {
+            callback1 = function(response) { response.send('hello 1'); };
+            callback2 = function(response) { response.send('hello 2'); };
+
+            this.robot.respond(/message456/, callback1);
+            this.robot.hear(/message123/, callback2);
+            this.robot.requiredEnv = {'ENV1': true, 'ENV2': true, 'ENV3': false}
+          });
+
+          context('ENV1 and ENV2 are not set', function() {
+            it('should send a warning message that you need to set the required env vars', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSend).to.eql([{strings: ['You need to set the following environment variables: ENV1, ENV2'], reply: true}]);
+                done();
+              });
+            });
+          });
+
+          context('ENV1 is set and ENV2 is not set', function() {
+            beforeEach(function() {
+              process.env.ENV1 = 'env1';
+            });
+
+            it('should send a warning message that you need to set the required env vars', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSend).to.eql([{strings: ['You need to set the following environment variables: ENV2'], reply: true}]);
+                done();
+              });
+            });
+          });
+
+          context('ENV1 and ENV2 are set but ENV3 is not set', function() {
+            beforeEach(function() {
+              process.env.ENV1 = 'env1';
+              process.env.ENV2 = 'env2';
+            });
+
+            it('should callback2', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSend).to.eql([{strings: ['hello 2'], reply: false}]);
+                done();
+              });
+            });
+          });
+        });
+
         context('handler has an asynchronous function', function(done) {
           beforeEach(function() {
             nock.disableNetConnect();
