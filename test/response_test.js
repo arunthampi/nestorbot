@@ -1,6 +1,7 @@
 var chai = require('chai');
 var sinon = require('sinon');
 var nock = require('nock');
+var URLSafeBase64 = require('urlsafe-base64');
 
 var User = require('../src/user');
 var Robot = require('../src/robot');
@@ -51,7 +52,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: (new Buffer('hello')).toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer('hello')),
                 reply: false
               }
             }
@@ -79,7 +80,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer("hello 1\nhello 2").toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer("hello 1\nhello 2")),
                 reply: false
               }
             }
@@ -129,7 +130,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer('hello').toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer('hello')),
                 reply: true
               }
             }
@@ -157,7 +158,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer("hello 1\nhello 2").toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer("hello 1\nhello 2")),
                 reply: true
               }
             }
@@ -187,7 +188,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer('hello 1').toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer('hello 1')),
                 reply: true
               }
             }
@@ -196,7 +197,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer("hello 2").toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer("hello 2")),
                 reply: true
               }
             }
@@ -243,7 +244,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer("hello 1").toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer("hello 1")),
                 reply: true
               }
             }
@@ -252,7 +253,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: new Buffer("hello 2").toString('base64'),
+                strings: URLSafeBase64.encode(new Buffer("hello 2")),
                 reply: true
               }
             }

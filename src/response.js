@@ -1,6 +1,7 @@
 var Response,
   __slice = [].slice;
 var Promise = require('promise');
+var URLSafeBase64 = require('urlsafe-base64');
 
 // Public: Responses are sent to matching listeners. Messages know about the
 // content and user that made the original message, and how to reply back to
@@ -76,7 +77,7 @@ Response.prototype.__send = function(strings, reply, callback) {
     message: {
       user_uid: this.message.user.id,
       channel_uid: this.message.room,
-      strings: new Buffer(stringsPayload.join("\n")).toString('base64'),
+      strings: URLSafeBase64.encode(new Buffer(stringsPayload.join("\n"))),
       reply: reply
     }
   });
