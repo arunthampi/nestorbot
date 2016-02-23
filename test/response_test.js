@@ -1,7 +1,6 @@
 var chai = require('chai');
 var sinon = require('sinon');
 var nock = require('nock');
-var URLSafeBase64 = require('urlsafe-base64');
 
 var User = require('../src/user');
 var Robot = require('../src/robot');

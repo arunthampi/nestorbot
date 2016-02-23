@@ -1,6 +1,5 @@
 var __slice = [].slice;
 var Promise = require('promise');
-var URLSafeBase64 = require('urlsafe-base64');
 
 var RichResponse = function RichResponse() {
   var opts = arguments[0] || {};
