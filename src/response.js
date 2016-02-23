@@ -3,6 +3,21 @@ var Response,
 var Promise = require('promise');
 var URLSafeBase64 = require('urlsafe-base64');
 
+var RichResponse = function RichResponse() {
+  this.fallback = null;
+  this.color = "good";
+  this.pretext = null;
+  this.author_name = null;
+  this.author_link = null;
+  this.author_icon = null;
+  this.title = null;
+  this.title_link = null;
+  this.text = null;
+  this.fields = [];
+  this.image_url = null;
+  this.thumb_url = null;
+};
+
 // Public: Responses are sent to matching listeners. Messages know about the
 // content and user that made the original message, and how to reply back to
 // them.
@@ -14,7 +29,7 @@ var Response = function Response(robot, message, match) {
   this.robot = robot;
   this.message = message;
   this.match = match;
-}
+};
 
 // Public: Posts a message back to the chat source
 //
@@ -22,8 +37,8 @@ var Response = function Response(robot, message, match) {
 //           should be kept intact.
 //
 // Returns boolean flag denoting whether the call was successfully
-Response.prototype.send = function(strings, callback) {
-  return this.__send(strings, false, callback);
+Response.prototype.send = function(payload, callback) {
+  return this.__send(payload, false, callback);
 };
 
 // Public: Posts a message mentioning the current user.
@@ -32,8 +47,8 @@ Response.prototype.send = function(strings, callback) {
 //           should be kept intact.
 //
 // Returns boolean flag denoting whether the call was successfully
-Response.prototype.reply = function(strings, callback) {
-  return this.__send(strings, true, callback);
+Response.prototype.reply = function(payload, callback) {
+  return this.__send(payload, true, callback);
 };
 
 // Public: Tell the message to stop dispatching to listeners
@@ -43,20 +58,30 @@ Response.prototype.finish = function() {
   return this.message.finish();
 };
 
-Response.prototype.__send = function(strings, reply, callback) {
-  stringsPayload = [];
+Response.prototype.__send = function(payload, reply, callback) {
+  var textPayloads = [];
+  var richPayloads = [];
 
-  if(strings instanceof Array) {
-    stringsPayload = stringsPayload.concat(strings);
-  } else {
-    stringsPayload.push(strings);
+  if(payload instanceof Array) {
+    for(var i in payload) {
+      var p = payload[i];
+      if (p.constructor == String) {
+        textPayloads.push(p);
+      } else if (p.constructor == RichResponse) {
+        richPayloads.push(p);
+      }
+    }
+  } else if (payload.constructor == String) {
+    textPayloads.push(payload);
+  } else if (payload.constructor == RichResponse) {
+    richPayloads.push(payload);
   }
 
   var _this = this;
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
-    _this.robot.toSend = _this.robot.toSend.concat({strings: stringsPayload, reply: reply });
+    _this.robot.toSend = _this.robot.toSend.concat({strings: textPayloads, reply: reply });
     if(callback !== undefined) { callback(); }
     return Promise.resolve();
   }
@@ -68,7 +93,7 @@ Response.prototype.__send = function(strings, reply, callback) {
   }
   var url = host + "/teams/" + this.robot.teamId + "/messages";
 
-  if(this.message.user == null || this.message.room == null || strings.length == 0) {
+  if(this.message.user == null || this.message.room == null || (textPayloads.length == 0 && richPayloads.length == 0)) {
     if(callback !== undefined) { callback(); }
     return Promise.resolve();
   }
@@ -77,7 +102,7 @@ Response.prototype.__send = function(strings, reply, callback) {
     message: {
       user_uid: this.message.user.id,
       channel_uid: this.message.room,
-      strings: URLSafeBase64.encode(new Buffer(stringsPayload.join("\n"))),
+      strings: URLSafeBase64.encode(new Buffer(textPayloads.join("\n"))),
       reply: reply
     }
   });
