@@ -6,6 +6,7 @@ var User = require('../src/user');
 var Robot = require('../src/robot');
 var TextMessage = require('../src/message').TextMessage;
 var Response = require('../src/response').Response;
+var RichResponse = require('../src/response').RichResponse;
 
 chai.use(require('sinon-chai'));
 expect = chai.expect;
@@ -31,9 +32,24 @@ describe('Response', function() {
           this.robot.debugMode = true;
         });
 
-        it('should buffer responses in robot.toSend', function() {
-          this.response.send('hello');
-          expect(this.robot.toSend).to.eql([{strings:['hello'], reply: false}]);
+        context('text payloads', function() {
+          it('should buffer responses in robot.toSend', function() {
+            this.response.send('hello');
+            expect(this.robot.toSend).to.eql([{strings:['hello'], reply: false}]);
+          });
+        });
+
+        context('rich payloads', function() {
+          var r;
+
+          beforeEach(function() {
+            r = new RichResponse({text: 'hello 1', image_url: 'https://imgur.com/abc.gif'});
+          });
+
+          it('should buffer responses in robot.toSend', function() {
+            this.response.send(r);
+            expect(this.robot.toSend).to.eql([{strings:[r.toString()], reply: false}]);
+          });
         });
       });
 
@@ -100,6 +116,39 @@ describe('Response', function() {
             });
           });
         });
+
+        context('with rich payload', function() {
+          var r1, r2;
+
+          beforeEach(function() {
+            r1 = new RichResponse({text: 'hello 1', image_url: 'https://imgur.com/abc.gif'});
+            r2 = new RichResponse({text: 'hello 2', image_url: 'https://imgur.com/def.gif'});
+
+            params = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                rich: JSON.stringify([r1, r2]),
+                reply: false
+              }
+            }
+
+            scope = nock('https://v2.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params)
+                .reply(202);
+          });
+
+          it('should make a request to the Nestor API to send a message back to the user', function() {
+            this.response.send([r1, r2], function() {
+              expect(scope.isDone()).to.be.true;
+            });
+          });
+        });
       });
     });
 
@@ -109,9 +158,24 @@ describe('Response', function() {
           this.robot.debugMode = true;
         });
 
-        it('should buffer responses in robot.toSend', function() {
-          this.response.reply('hello');
-          expect(this.robot.toSend).to.eql([{strings:['hello'], reply: true}]);
+        context('text payloads', function() {
+          it('should buffer responses in robot.toSend', function() {
+            this.response.reply('hello');
+            expect(this.robot.toSend).to.eql([{strings:['hello'], reply: true}]);
+          });
+        });
+
+        context('rich payloads', function() {
+          var r;
+
+          beforeEach(function() {
+            r = new RichResponse({text: 'hello 1', image_url: 'https://imgur.com/abc.gif'});
+          });
+
+          it('should buffer responses in robot.toSend', function() {
+            this.response.reply(r);
+            expect(this.robot.toSend).to.eql([{strings:[r.toString()], reply: true}]);
+          });
         });
       });
 

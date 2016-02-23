@@ -18,6 +18,23 @@ var RichResponse = function RichResponse() {
   this.thumb_url = opts.thumb_url;
 };
 
+RichResponse.prototype.toString = function() {
+  var response = [];
+
+  if(this.title) { response.push("Title: " + this.title); }
+  if(this.title_link) { response.push("Title: " + this.title_link); }
+  if(this.pretext) { response.push("Pretext: " + this.pretext); }
+  if(this.text) { response.push("Text: " + this.text); }
+  if(this.author_name) { response.push("Author Name: " + this.author_name); }
+  if(this.author_link) { response.push("Author Link: " + this.author_link); }
+  if(this.author_icon) { response.push("Author Icon: " + this.author_icon); }
+  if(this.color) { response.push("Color: " + this.color); }
+  if(this.fields) { response.push("Fields: " + this.fields.join(', ')); }
+  if(this.image_url) { response.push("Image URL: " + this.image_url); }
+  if(this.thumb_url) { response.push("Thumb URL: " + this.thumb_url); }
+  if(this.fallback) { response.push("Fallback: " + this.fallback); }
+};
+
 // Public: Responses are sent to matching listeners. Messages know about the
 // content and user that made the original message, and how to reply back to
 // them.
@@ -81,7 +98,10 @@ Response.prototype.__send = function(payload, reply, callback) {
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
-    _this.robot.toSend = _this.robot.toSend.concat({strings: textPayloads, reply: reply });
+    var toSendText = textPayloads;
+    var toSendRich = richPayloads.map(function(e) { return e.toString(); });
+
+    _this.robot.toSend = _this.robot.toSend.concat({strings: toSendText.concat(toSendRich), reply: reply });
     if(callback !== undefined) { callback(); }
     return Promise.resolve();
   }
