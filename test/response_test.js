@@ -6,7 +6,7 @@ var URLSafeBase64 = require('urlsafe-base64');
 var User = require('../src/user');
 var Robot = require('../src/robot');
 var TextMessage = require('../src/message').TextMessage;
-var Response = require('../src/response');
+var Response = require('../src/response').Response;
 
 chai.use(require('sinon-chai'));
 expect = chai.expect;

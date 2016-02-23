@@ -1,21 +1,22 @@
-var Response,
-  __slice = [].slice;
+var __slice = [].slice;
 var Promise = require('promise');
 var URLSafeBase64 = require('urlsafe-base64');
 
 var RichResponse = function RichResponse() {
-  this.fallback = null;
-  this.color = "good";
-  this.pretext = null;
-  this.author_name = null;
-  this.author_link = null;
-  this.author_icon = null;
-  this.title = null;
-  this.title_link = null;
-  this.text = null;
-  this.fields = [];
-  this.image_url = null;
-  this.thumb_url = null;
+  var opts = arguments[0] || {};
+
+  this.fallback = opts.fallback;
+  this.color = opts.color || "good";
+  this.pretext = opts.pretext;
+  this.author_name = opts.author_name;
+  this.author_link = opts.author_link;
+  this.author_icon = opts.author_icon;
+  this.title = opts.title;
+  this.title_link = opts.title_link;
+  this.text = opts.text;
+  this.fields = opts.fields || [];
+  this.image_url = opts.image_url;
+  this.thumb_url = opts.thumb_url;
 };
 
 // Public: Responses are sent to matching listeners. Messages know about the
@@ -118,4 +119,7 @@ Response.prototype.__send = function(payload, reply, callback) {
   });
 }
 
-module.exports = Response;
+module.exports = {
+  Response: Response,
+  RichResponse: RichResponse
+};

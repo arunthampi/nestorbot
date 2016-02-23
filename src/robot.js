@@ -1,7 +1,7 @@
 var _ref = require('./listener'), Listener = _ref.Listener, TextListener = _ref.TextListener;
 var TextMessage = require('./message').TextMessage;
 var HttpClient = require('scoped-http-client');
-var Response = require('./response');
+var Response = require('./response').Response;
 var Path = require('path');
 var Log = require('log');
 
