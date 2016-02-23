@@ -52,7 +52,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer('hello')),
+                text: JSON.stringify(['hello']),
                 reply: false
               }
             }
@@ -80,7 +80,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer("hello 1\nhello 2")),
+                text: JSON.stringify(["hello 1, hello 2"]),
                 reply: false
               }
             }
@@ -130,7 +130,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer('hello')),
+                text: JSON.stringify(['hello']),
                 reply: true
               }
             }
@@ -158,7 +158,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer("hello 1\nhello 2")),
+                text: JSON.stringify(["hello 1", "hello 2"]),
                 reply: true
               }
             }
@@ -188,7 +188,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer('hello 1')),
+                text: JSON.stringify(['hello 1']),
                 reply: true
               }
             }
@@ -197,7 +197,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer("hello 2")),
+                text: JSON.stringify(['hello 2']),
                 reply: true
               }
             }
@@ -244,7 +244,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer("hello 1")),
+                text: JSON.stringify(['hello 1']),
                 reply: true
               }
             }
@@ -253,7 +253,7 @@ describe('Response', function() {
               message: {
                 user_uid: 'UDEADBEEF1',
                 channel_uid: 'CDEADBEEF1',
-                strings: URLSafeBase64.encode(new Buffer("hello 2")),
+                text: JSON.stringify(['hello 2']),
                 reply: true
               }
             }

@@ -99,20 +99,27 @@ Response.prototype.__send = function(payload, reply, callback) {
     return Promise.resolve();
   }
 
-  var params =  JSON.stringify({
+  var params =  {
     message: {
       user_uid: this.message.user.id,
       channel_uid: this.message.room,
-      strings: URLSafeBase64.encode(new Buffer(textPayloads.join("\n"))),
       reply: reply
     }
-  });
+  };
+
+  if(textPayloads.length > 0) {
+    params.message.text = JSON.stringify(textPayloads);
+  }
+
+  if(richPayloads.length > 0) {
+    params.message.rich = JSON.stringify(richPayloads);
+  }
 
   return new Promise(function(fulfill, reject) {
     _this.robot.http(url).
       header('Authorization', authToken).
       header('Content-Type', 'application/json').
-      post(params)(function(err, resp, body) {
+      post(JSON.stringify(params))(function(err, resp, body) {
         if(callback !== undefined) { callback(); }
         if (err) { reject(err); } else { fulfill(resp); }
     });
