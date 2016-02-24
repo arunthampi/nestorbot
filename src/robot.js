@@ -99,12 +99,12 @@ Robot.prototype.loadFile = function(path, file) {
       if (typeof script === 'function') {
         script(this);
       } else {
-        return this.logger.warning("Expected " + full + " to assign a function to module.exports, got " + (typeof script));
+        console.log("Expected " + full + " to assign a function to module.exports, got " + (typeof script));
       }
     } catch (e) {
       error = e;
-      this.logger.error("Unable to load " + full + ": " + error.stack);
-      return process.exit(1);
+      console.log("Unable to load " + full + ": " + error.stack);
+      process.exit(1);
     }
   }
 };
