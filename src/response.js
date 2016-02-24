@@ -75,6 +75,11 @@ Response.prototype.finish = function() {
   return this.message.finish();
 };
 
+Response.prototype.newRichResponse = function() {
+  var opts = arguments[0] || {};
+  return new RichResponse(opts);
+};
+
 Response.prototype.__send = function(payload, reply, callback) {
   var textPayloads = [];
   var richPayloads = [];
