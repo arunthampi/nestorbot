@@ -11,6 +11,15 @@ var RichResponse = require('../src/response').RichResponse;
 chai.use(require('sinon-chai'));
 expect = chai.expect;
 
+describe('RichResponse', function() {
+  describe('toString', function() {
+    it('should return a string representation of RichResponse', function() {
+      var r = new RichResponse({title: 'Hello', text: 'Hello for realz', color: 'good'});
+      expect(r.toString()).to.eql("Title: Hello, Text: Hello for realz, Color: good");
+    });
+  });
+});
+
 describe('Response', function() {
   var robot, adapter;
 
@@ -26,6 +35,13 @@ describe('Response', function() {
   });
 
   describe('Public API', function() {
+    describe('newRichResponse', function() {
+      it('should return a RichResponse object', function() {
+        var r = this.response.newRichResponse();
+        expect(r.constructor).to.eql(RichResponse);
+      });
+    });
+
     describe('send', function() {
       context('when in debug mode', function() {
         beforeEach(function() {

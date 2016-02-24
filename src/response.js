@@ -29,10 +29,12 @@ RichResponse.prototype.toString = function() {
   if(this.author_link) { response.push("Author Link: " + this.author_link); }
   if(this.author_icon) { response.push("Author Icon: " + this.author_icon); }
   if(this.color) { response.push("Color: " + this.color); }
-  if(this.fields) { response.push("Fields: " + this.fields.join(', ')); }
+  if(this.fields && this.fields.length > 0) { response.push("Fields: " + this.fields.join(', ')); }
   if(this.image_url) { response.push("Image URL: " + this.image_url); }
   if(this.thumb_url) { response.push("Thumb URL: " + this.thumb_url); }
   if(this.fallback) { response.push("Fallback: " + this.fallback); }
+
+  return response.join(', ');
 };
 
 // Public: Responses are sent to matching listeners. Messages know about the
