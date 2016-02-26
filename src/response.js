@@ -102,13 +102,13 @@ Response.prototype.__send = function(payload, reply, callback) {
   }
 
   var _this = this;
+  var toSendText = textPayloads;
+  var toSendRich = richPayloads.map(function(e) { return e.toString(); });
+  this.robot.toSend = _this.robot.toSend.concat({strings: toSendText.concat(toSendRich), reply: reply });
+
   // If robot is in debugMode, then don't actually send response back
   // just buffer them and Nestor will deal with it
   if(this.robot.debugMode) {
-    var toSendText = textPayloads;
-    var toSendRich = richPayloads.map(function(e) { return e.toString(); });
-
-    _this.robot.toSend = _this.robot.toSend.concat({strings: toSendText.concat(toSendRich), reply: reply });
     if(callback !== undefined) { callback(); }
     return Promise.resolve();
   }
