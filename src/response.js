@@ -116,7 +116,7 @@ Response.prototype.__send = function(payload, reply, callback) {
   var authToken = process.env.__NESTOR_AUTH_TOKEN;
   var host = process.env.__NESTOR_API_HOST;
   if (host == null) {
-    host = "https://v2.asknestor.me";
+    host = "https://www.asknestor.me";
   }
   var url = host + "/teams/" + this.robot.teamId + "/messages";
 

@@ -88,7 +88,7 @@ describe('Response', function() {
               }
             }
 
-            scope = nock('https://v2.asknestor.me', {
+            scope = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -116,7 +116,7 @@ describe('Response', function() {
               }
             }
 
-            scope = nock('https://v2.asknestor.me', {
+            scope = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -149,7 +149,7 @@ describe('Response', function() {
               }
             }
 
-            scope = nock('https://v2.asknestor.me', {
+            scope = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -214,7 +214,7 @@ describe('Response', function() {
               }
             }
 
-            scope = nock('https://v2.asknestor.me', {
+            scope = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -242,7 +242,7 @@ describe('Response', function() {
               }
             }
 
-            scope = nock('https://v2.asknestor.me', {
+            scope = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -281,7 +281,7 @@ describe('Response', function() {
               }
             }
 
-            scope1 = nock('https://v2.asknestor.me', {
+            scope1 = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -290,7 +290,7 @@ describe('Response', function() {
                 .post('/teams/TDEADBEEF/messages', params1)
                 .reply(202);
 
-            scope2 = nock('https://v2.asknestor.me', {
+            scope2 = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -337,7 +337,7 @@ describe('Response', function() {
               }
             }
 
-            scope1 = nock('https://v2.asknestor.me', {
+            scope1 = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
@@ -346,7 +346,7 @@ describe('Response', function() {
                 .post('/teams/TDEADBEEF/messages', params1)
                 .reply(202);
 
-            scope2 = nock('https://v2.asknestor.me', {
+            scope2 = nock('https://www.asknestor.me', {
                 reqheaders: {
                     'Authorization': 'authToken',
                     'Content-Type': 'application/json'
