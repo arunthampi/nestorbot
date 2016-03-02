@@ -176,7 +176,8 @@ Robot.prototype.receive = function(message, done) {
     }
 
     if(missingEnv.length > 0) {
-      var strings = ["You need to set the following environment variables: " + missingEnv.join(', ')];
+      var strings = ["You need to set the following environment variables: " + missingEnv.join(', '),
+                     "You can set an environment variable with the command: `@nestorbot setenv " + missingEnv[0] + "=example-value`"];
       resp.reply(strings, done);
     } else {
       if(listener.callback.length == 1) {

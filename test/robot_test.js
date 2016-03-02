@@ -223,7 +223,8 @@ describe('Robot', function() {
             it('should send a warning message that you need to set the required env vars', function(done) {
               var _this = this;
               this.robot.receive(testMessage, function() {
-                expect(_this.robot.toSend).to.eql([{strings: ['You need to set the following environment variables: ENV1, ENV2'], reply: true}]);
+                expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV1, ENV2",
+                                                              "You can set an environment variable with the command: `@nestorbot setenv ENV1=example-value`"], reply: true}]);
                 done();
               });
             });
@@ -237,7 +238,8 @@ describe('Robot', function() {
             it('should send a warning message that you need to set the required env vars', function(done) {
               var _this = this;
               this.robot.receive(testMessage, function() {
-                expect(_this.robot.toSend).to.eql([{strings: ['You need to set the following environment variables: ENV2'], reply: true}]);
+                expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV2",
+                                                              "You can set an environment variable with the command: `@nestorbot setenv ENV2=example-value`"], reply: true}]);
                 done();
               });
             });
