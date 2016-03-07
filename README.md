@@ -316,6 +316,13 @@ module.exports = function(robot) {
 };
 ```
 
+## Things to Note
+
+* The filesystem available to Nestor apps is not persistent. Any files
+  that you write will not be available on the next run of the app.
+* You have a maximum of 60 seconds to complete a request made to Nestorbot. If there are use cases for which you'd want longer execution time, please get in touch at [concierge@asknestor.me](mailto:concierge@asknestor.me).
+
+
 ## Feature Requests / Bug Reports / Corrections
 
 If you have feature requests, bug reports in both the app as well as the manual, please [raise an issue](https://github.com/zerobotlabs/nestorbot/issues).
