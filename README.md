@@ -16,6 +16,9 @@ possible with Hubot's API -- The Nestor Programming Manual has also been adapted
 
 Nestor is powered by "apps" that are analogous to Hubot scripts.
 
+[![Build
+Status](https://travis-ci.org/zerobotlabs/nestorbot.svg?branch=master)](https://travis-ci.org/zerobotlabs/nestorbot)
+
 ## Structure of an App
 
 A Nestor app is at its most fundamental an NPM package with a couple of
