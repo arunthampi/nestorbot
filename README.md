@@ -97,6 +97,34 @@ The `robot.hear /gif me honeybadgers/` callback sends a message exactly as speci
 
 If a user Bob says "@nestorbot: weather in san francisco", `robot.respond /weather in san francisco/i` callback sends a message "@bob: sunny and awesome"
 
+### Sending and Replying Sequentially
+
+For users familiar with the existing Hubot API, you might have been
+curious about the presence of a "done" argument in `robot.hear` and
+`robot.respond`. This is because Nestor apps are invoked in
+container-ized sandboxes that exit once the app has been completed.
+Since node.js methods are asynchronous, we need to let the Nestor App
+Execution Engine that the app has completed -- and that's where the
+`done` argument comes in. When `done` is passed as an argument to either
+`send` or `reply` the Execution Engine will then "return" from the
+function and the app will no longer be executed.
+
+If you need to send data more than once, not to worry -- `msg.reply` and
+`msg.send` return promises that can be used to order messages in a given
+sequence. As an example:
+
+```javascript
+module.exports = function(robot) {
+  robot.respond(/weather in san francisco/i, function(msg, done) {
+    msg.reply("sunny and awesome").then(function() {
+      msg.send("the best weather", done);
+    });
+  });
+};
+```
+
+will first send "sunny and awesome", followed by "the best weather".
+
 ## Capturing data
 
 So far, our apps have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update an app like:
