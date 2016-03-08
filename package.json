@@ -16,7 +16,7 @@
     "botkit"
   ],
   "dependencies": {
-    "scoped-http-client": "0.11.0",
+    "scoped-http-client": "zerobotlabs/node-scoped-http-client#93e695f",
     "log": "1.4.0",
     "promise": "7.1.1"
   },
