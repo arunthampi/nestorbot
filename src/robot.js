@@ -167,17 +167,29 @@ Robot.prototype.receive = function(message, done) {
 
   if(listener !== null) {
     var missingEnv = [];
-    requiredEnv = this.requiredEnv || {}
+    var requiredEnv = this.requiredEnv || {}
 
     for(var prop in requiredEnv) {
-      if(requiredEnv[prop] == true && (!(prop in process.env) || process.env[prop] == "")) {
-        missingEnv.push(prop);
+      var requiredProp = requiredEnv[prop];
+
+      if(requiredProp && requiredProp.required == true && (!(prop in process.env) || process.env[prop] == "")) {
+        missingEnv.push({variable: prop, mode: requiredProp.mode});
       }
     }
 
     if(missingEnv.length > 0) {
-      var strings = ["You need to set the following environment variables: " + missingEnv.join(', '),
-                     "You can set an environment variable with the command: `@nestorbot setenv " + missingEnv[0] + "=example-value`"];
+      var strings = ["You need to set the following environment variables: " + missingEnv.map(function(p) { return p.variable; }).join(', ')];
+      var oauthEnv = missingEnv.filter(function(p) { return p.mode == 'oauth'; });
+      var userEnv = missingEnv.filter(function(p) { return p.mode == 'user'; });
+
+      if(oauthEnv.length > 0) {
+        strings.push("You can set " + oauthEnv.map(function(p) { return p.variable; }).join(', ') + " by visiting this URL: https://www.asknestor.me/teams/" + this.teamId + "/apps/" + process.env.__NESTOR_APP_PERMALINK + "/auth");
+      }
+
+      if(userEnv.length > 0) {
+        strings.push("You can set " + userEnv.map(function(p) { return p.variable; }).join(', ') + " by saying `setenv`. For example, `@nestorbot setenv " + userEnv[0].variable + "=example-value`");
+      }
+
       resp.reply(strings, done);
     } else {
       if(listener.callback.length == 1) {
