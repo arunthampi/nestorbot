@@ -210,52 +210,138 @@ describe('Robot', function() {
         });
 
         context('there are required env variables', function() {
-          beforeEach(function() {
-            callback1 = function(response) { response.send('hello 1'); };
-            callback2 = function(response) { response.send('hello 2'); };
+          context('when required env variables need to be set by OAuth', function() {
+            beforeEach(function() {
+              callback1 = function(response) { response.send('hello 1'); };
+              callback2 = function(response) { response.send('hello 2'); };
 
-            this.robot.respond(/message456/, callback1);
-            this.robot.hear(/message123/, callback2);
-            this.robot.requiredEnv = {'ENV1': true, 'ENV2': true, 'ENV3': false}
-          });
+              this.robot.respond(/message456/, callback1);
+              this.robot.hear(/message123/, callback2);
+              process.env.__NESTOR_APP_PERMALINK = 'hello';
+              delete(process.env.ENV1);
+              delete(process.env.ENV2);
 
-          context('ENV1 and ENV2 are not set', function() {
-            it('should send a warning message that you need to set the required env vars', function(done) {
-              var _this = this;
-              this.robot.receive(testMessage, function() {
-                expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV1, ENV2",
-                                                              "You can set an environment variable with the command: `@nestorbot setenv ENV1=example-value`"], reply: true}]);
-                done();
+              this.robot.requiredEnv = {
+                'ENV1': {
+                  required: true,
+                  mode: 'oauth'
+                },
+                'ENV2': {
+                  required: true,
+                  mode: 'oauth'
+                },
+                'ENV3': {
+                  required: false,
+                  mode: 'user'
+                }
+              }
+            });
+
+            context('ENV1 and ENV2 are not set', function() {
+              it('should send a warning message that you need to set the required env vars', function(done) {
+                var _this = this;
+                this.robot.receive(testMessage, function() {
+                  expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV1, ENV2",
+                                                                "You can set ENV1, ENV2 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/apps/hello/auth"], reply: true}]);
+                  done();
+                });
+              });
+            });
+
+            context('ENV1 is set and ENV2 is not set', function() {
+              beforeEach(function() {
+                process.env.ENV1 = 'env1';
+              });
+
+              it('should send a warning message that you need to set the required env vars', function(done) {
+                var _this = this;
+                this.robot.receive(testMessage, function() {
+                  expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV2",
+                                                                "You can set ENV2 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/apps/hello/auth"], reply: true}]);
+                  done();
+                });
+              });
+            });
+
+            context('ENV1 and ENV2 are set but ENV3 is not set', function() {
+              beforeEach(function() {
+                process.env.ENV1 = 'env1';
+                process.env.ENV2 = 'env2';
+              });
+
+              it('should callback2', function(done) {
+                var _this = this;
+                this.robot.receive(testMessage, function() {
+                  expect(_this.robot.toSend).to.eql([{strings: ['hello 2'], reply: false}]);
+                  done();
+                });
               });
             });
           });
 
-          context('ENV1 is set and ENV2 is not set', function() {
+          context('when required env variables need to be set by the user', function() {
             beforeEach(function() {
-              process.env.ENV1 = 'env1';
+              callback1 = function(response) { response.send('hello 1'); };
+              callback2 = function(response) { response.send('hello 2'); };
+              delete(process.env.ENV1);
+              delete(process.env.ENV2);
+
+              this.robot.respond(/message456/, callback1);
+              this.robot.hear(/message123/, callback2);
+              this.robot.requiredEnv = {
+                'ENV1': {
+                  required: true,
+                  mode: 'user'
+                },
+                'ENV2': {
+                  required: true,
+                  mode: 'user'
+                },
+                'ENV3': {
+                  required: false,
+                  mode: 'user'
+                }
+              }
             });
 
-            it('should send a warning message that you need to set the required env vars', function(done) {
-              var _this = this;
-              this.robot.receive(testMessage, function() {
-                expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV2",
-                                                              "You can set an environment variable with the command: `@nestorbot setenv ENV2=example-value`"], reply: true}]);
-                done();
+            context('ENV1 and ENV2 are not set', function() {
+              it('should send a warning message that you need to set the required env vars', function(done) {
+                var _this = this;
+                this.robot.receive(testMessage, function() {
+                  expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV1, ENV2",
+                                                                "You can set ENV1, ENV2 by saying `setenv`. For example, `@nestorbot setenv ENV1=example-value`"], reply: true}]);
+                  done();
+                });
               });
             });
-          });
 
-          context('ENV1 and ENV2 are set but ENV3 is not set', function() {
-            beforeEach(function() {
-              process.env.ENV1 = 'env1';
-              process.env.ENV2 = 'env2';
+            context('ENV1 is set and ENV2 is not set', function() {
+              beforeEach(function() {
+                process.env.ENV1 = 'env1';
+              });
+
+              it('should send a warning message that you need to set the required env vars', function(done) {
+                var _this = this;
+                this.robot.receive(testMessage, function() {
+                  expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV2",
+                                                                "You can set ENV2 by saying `setenv`. For example, `@nestorbot setenv ENV2=example-value`"], reply: true}]);
+                  done();
+                });
+              });
             });
 
-            it('should callback2', function(done) {
-              var _this = this;
-              this.robot.receive(testMessage, function() {
-                expect(_this.robot.toSend).to.eql([{strings: ['hello 2'], reply: false}]);
-                done();
+            context('ENV1 and ENV2 are set but ENV3 is not set', function() {
+              beforeEach(function() {
+                process.env.ENV1 = 'env1';
+                process.env.ENV2 = 'env2';
+              });
+
+              it('should callback2', function(done) {
+                var _this = this;
+                this.robot.receive(testMessage, function() {
+                  expect(_this.robot.toSend).to.eql([{strings: ['hello 2'], reply: false}]);
+                  done();
+                });
               });
             });
           });
