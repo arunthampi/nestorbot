@@ -178,15 +178,15 @@ Robot.prototype.receive = function(message, done) {
     }
 
     if(missingEnv.length > 0) {
-      var strings = ["You need to set the following environment variables: " + missingEnv.map(function(p) { return p.variable; }).join(', ')];
+      var strings = [];
       var oauthEnv = missingEnv.filter(function(p) { return p.mode == 'oauth'; });
       var userEnv = missingEnv.filter(function(p) { return p.mode == 'user'; });
 
       if(oauthEnv.length > 0) {
+        strings.push("You need to set the following environment variables: " + oauthEnv.map(function(p) { return p.variable; }).join(', '));
         strings.push("You can set " + oauthEnv.map(function(p) { return p.variable; }).join(', ') + " by visiting this URL: https://www.asknestor.me/teams/" + this.teamId + "/apps/" + process.env.__NESTOR_APP_PERMALINK + "/auth");
-      }
-
-      if(userEnv.length > 0) {
+      } else if(userEnv.length > 0) {
+        strings.push("You need to set the following environment variables: " + userEnv.map(function(p) { return p.variable; }).join(', '));
         strings.push("You can set " + userEnv.map(function(p) { return p.variable; }).join(', ') + " by saying `setenv`. For example, `@nestorbot setenv " + userEnv[0].variable + "=example-value`");
       }
 
