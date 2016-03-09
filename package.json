@@ -1,6 +1,6 @@
 {
   "name": "nestorbot",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Toolkit to make Nestor Bot Apps",
   "main": "index.js",
   "scripts": {
