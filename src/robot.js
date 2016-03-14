@@ -4,6 +4,7 @@ var HttpClient = require('scoped-http-client');
 var Response = require('./response').Response;
 var Path = require('path');
 var Log = require('log');
+var Fuse = require('fuse.js');
 
 var __hasProp = {}.hasOwnProperty,
     __slice = [].slice,
@@ -23,6 +24,7 @@ var Robot = function(teamId, botId, debugMode) {
   this.debugMode = debugMode;
   this.listeners = [];
   this.toSend = [];
+  this.toSuggest = [];
   this.globalHttpOptions = {};
 
   if(this.debugMode == true) {
@@ -49,7 +51,7 @@ Robot.prototype.respondPattern = function(regex) {
 
   var pattern = re.join('/');
 
-  newRegex = new RegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:\\s*(?:" + pattern + ")", modifiers);
+  newRegex = new RegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:?\\s*(?:" + pattern + ")", modifiers);
   return newRegex;
 };
 
@@ -155,9 +157,14 @@ Robot.prototype.receive = function(message, done) {
   var _this = this;
   var resp = new Response(_this, message);
   var listener = null;
+  var suggestions = [];
 
   for(var i in this.listeners) {
     l = this.listeners[i];
+    if(l.options && l.options.suggestions) {
+      suggestions = suggestions.concat(l.options.suggestions.map(function(c) { return { suggestion: c }; }));
+    }
+
     if (match = l.matcher(message)) {
       resp.match = match;
       listener = l;
@@ -198,6 +205,16 @@ Robot.prototype.receive = function(message, done) {
       } else {
         listener.callback(resp, done);
       }
+    }
+  } else {
+    if(suggestions.length > 0) {
+      var fuse = new Fuse(suggestions, { keys: ["suggestion"], caseSensitive: false, distance: 16, threshold: 0.4 });
+      // Remove the bot ID for better matches
+      var message = message.toString().replace(new RegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:?", 'g'), '').trim();
+
+      var results = fuse.search(message);
+      this.toSuggest = this.toSuggest.concat(results.map(function(c) { return c.suggestion; }));
+      done();
     }
   }
 };
