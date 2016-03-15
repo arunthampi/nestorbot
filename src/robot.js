@@ -208,7 +208,7 @@ Robot.prototype.receive = function(message, done) {
     }
   } else {
     if(suggestions.length > 0) {
-      var fuse = new Fuse(suggestions, { keys: ["suggestion"], caseSensitive: false, distance: 16, threshold: 0.4 });
+      var fuse = new Fuse(suggestions, { keys: ["suggestion"], caseSensitive: false, distance: 10, threshold: 0.4 });
       // Remove the bot ID for better matches
       var message = message.toString().replace(new RegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:?", 'g'), '').trim();
 
