@@ -190,6 +190,62 @@ describe('Robot', function() {
           });
         });
 
+        context('with suggestions', function(done) {
+          context('with respond', function() {
+            beforeEach(function() {
+              this.robot.debugMode = false;
+              callback1 = function(response) { response.send('hello 1'); };
+              this.robot.respond(/heroku list apps (.*)?/, {suggestions: ["heroku list apps"]}, callback1);
+              testMessage = new TextMessage(this.user, '<@UNESTORBOT1>: hreoku lis app');
+            });
+
+            it('should populate toSuggest with heroku list apps', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSuggest).to.eql(["heroku list apps"]);
+                done();
+              });
+            });
+          });
+
+          context('with only one listener', function() {
+            beforeEach(function() {
+              this.robot.debugMode = false;
+              callback1 = function(response) { response.send('hello 1'); };
+              this.robot.hear(/heroku list apps (.*)?/, {suggestions: ["heroku list apps"]}, callback1);
+              testMessage = new TextMessage(this.user, 'hreoku lis app');
+            });
+
+            it('should populate toSuggest with heroku list apps', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSuggest).to.eql(["heroku list apps"]);
+                done();
+              });
+            });
+          });
+
+          context('with multiple listeners', function() {
+            beforeEach(function() {
+              this.robot.debugMode = false;
+              callback1 = function(response) { response.send('list apps'); };
+              callback2 = function(response) { response.send('migrate apps'); };
+              this.robot.hear(/heroku list apps (.*)?/, {suggestions: ["heroku list apps <app-filter>"]}, callback1);
+              this.robot.hear(/heroku migrate app (.*)?/, {suggestions: ["heroku migrate app <app>"]}, callback2);
+              testMessage = new TextMessage(this.user, 'hreoku lis app');
+            });
+
+            it('should populate toSuggest with heroku list apps', function(done) {
+              var _this = this;
+              this.robot.receive(testMessage, function() {
+                expect(_this.robot.toSuggest).to.eql(["heroku list apps <app-filter>"]);
+                expect(_this.robot.toSend).to.eql([]);
+                done();
+              });
+            });
+          });
+        });
+
         context('only one of the handlers match', function(done) {
           beforeEach(function() {
             callback1 = function(response) { response.send('hello 1'); };
