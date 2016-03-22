@@ -19,7 +19,8 @@
     "fuse.js": "^2.2.0",
     "log": "1.4.0",
     "promise": "7.1.1",
-    "scoped-http-client": "zerobotlabs/node-scoped-http-client#93e695f"
+    "scoped-http-client": "zerobotlabs/node-scoped-http-client#93e695f",
+    "xregexp": "^3.1.0"
   },
   "devDependencies": {
     "mocha": "^2.1.0",

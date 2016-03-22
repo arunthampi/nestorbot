@@ -5,6 +5,7 @@ var Response = require('./response').Response;
 var Path = require('path');
 var Log = require('log');
 var Fuse = require('fuse.js');
+var XRegExp = require('xregexp');
 
 var __hasProp = {}.hasOwnProperty,
     __slice = [].slice,
@@ -39,19 +40,19 @@ var Robot = function(teamId, botId, debugMode) {
 // regex - A RegExp for the message part that follows the robot's name
 //
 // Returns RegExp.
-Robot.prototype.respondPattern = function(regex) {
+Robot.prototype.respondPattern = function(regex, hear) {
   var re = regex.toString().split('/');
   re.shift();
 
   var modifiers = re.pop();
-  if (re[0] && re[0][0] === '^') {
-    this.logger.warning("Anchors don't work well with respond, perhaps you want to use 'hear'");
-    this.logger.warning("The regex in question was " + (regex.toString()));
-  }
-
   var pattern = re.join('/');
 
-  newRegex = new RegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:?\\s*(?:" + pattern + ")", modifiers);
+  if(hear) {
+    newRegex = new XRegExp(pattern, modifiers);
+  } else {
+    newRegex = new XRegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:?\\s*(?:" + pattern + ")", modifiers);
+  }
+
   return newRegex;
 };
 
@@ -65,6 +66,7 @@ Robot.prototype.respondPattern = function(regex) {
 //
 // Returns nothing.
 Robot.prototype.hear = function(regex, options, callback) {
+  if(!(regex instanceof XRegExp)) { regex = this.respondPattern(regex, true); }
   this.listeners.push(new TextListener(this, regex, options, callback));
 };
 
@@ -79,7 +81,11 @@ Robot.prototype.hear = function(regex, options, callback) {
 //
 // Returns nothing.
 Robot.prototype.respond = function(regex, options, callback) {
-  if(!this.debugMode) { regex = this.respondPattern(regex); }
+  if(!this.debugMode) {
+    regex = this.respondPattern(regex, false);
+  } else {
+    regex = this.respondPattern(regex, true);
+  }
 
   this.hear(regex, options, callback);
 };

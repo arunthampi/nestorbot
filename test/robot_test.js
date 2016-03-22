@@ -265,6 +265,22 @@ describe('Robot', function() {
           });
         });
 
+        context('with unicode characters & regex', function() {
+          beforeEach(function() {
+            testMessage = new TextMessage(this.user, "Senõr");
+            callback1 = function(response) { response.send('hello 1'); };
+            this.robot.respond(/\pL+$/, callback1);
+          });
+
+          it('should call the callback', function(done) {
+            var _this = this;
+            this.robot.receive(testMessage, function() {
+              expect(_this.robot.toSend).to.eql([{strings: ['hello 1'], reply: false}]);
+              done();
+            });
+          });
+        });
+
         context('there are required env variables', function() {
           context('when required env variables need to be set by OAuth', function() {
             beforeEach(function() {
