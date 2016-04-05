@@ -50,7 +50,7 @@ Robot.prototype.respondPattern = function(regex, hear) {
   if(hear) {
     newRegex = new XRegExp(pattern, modifiers);
   } else {
-    newRegex = new XRegExp("<@" + this.botId + "\\|*(?:[^>]+)*>:?\\s*(?:" + pattern + ")", modifiers);
+    newRegex = new XRegExp("<?@" + this.botId + "\\|*(?:[^>]+)*>?:?\\s*(?:" + pattern + ")", modifiers);
   }
 
   return newRegex;

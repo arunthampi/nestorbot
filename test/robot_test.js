@@ -12,7 +12,7 @@ var expect = chai.expect;
 describe('Robot', function() {
   beforeEach(function() {
     this.robot = new Robot('TDEADBEEF', 'UNESTORBOT1', false);
-    this.user = new User('1', {
+    this.user = new User('UDEADBEEF1', {
       name: 'nestorbottester',
       room: 'CDEADBEEF1'
     });
@@ -276,6 +276,44 @@ describe('Robot', function() {
             var _this = this;
             this.robot.receive(testMessage, function() {
               expect(_this.robot.toSend).to.eql([{strings: ['hello 1'], reply: false}]);
+              done();
+            });
+          });
+        });
+
+        context('with the message containing the bot id without <> characters (debugMode is false)', function() {
+          var params;
+          var scope;
+
+          beforeEach(function() {
+            this.robot.debugMode = false;
+            process.env.__NESTOR_AUTH_TOKEN = 'authToken';
+            params = {
+              message: {
+                user_uid: 'UDEADBEEF1',
+                channel_uid: 'CDEADBEEF1',
+                text: JSON.stringify(['hello 1']),
+                reply: false
+              }
+            }
+
+            scope = nock('https://www.asknestor.me', {
+                reqheaders: {
+                    'Authorization': 'authToken',
+                    'Content-Type': 'application/json'
+                  }
+                })
+                .post('/teams/TDEADBEEF/messages', params)
+                .reply(202);
+
+            testMessage = new TextMessage(this.user, "@UNESTORBOT1 hello");
+            callback1 = function(response) { response.send('hello 1'); };
+            this.robot.respond(/hello/, callback1);
+          });
+
+          it('should call the callback', function(done) {
+            this.robot.receive(testMessage, function() {
+              expect(scope.isDone()).to.be.true;
               done();
             });
           });
