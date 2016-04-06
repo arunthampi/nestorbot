@@ -197,7 +197,7 @@ Robot.prototype.receive = function(message, done) {
 
       if(oauthEnv.length > 0) {
         strings.push("You need to set the following environment variables: " + oauthEnv.map(function(p) { return p.variable; }).join(', '));
-        strings.push("You can set " + oauthEnv.map(function(p) { return p.variable; }).join(', ') + " by visiting this URL: https://www.asknestor.me/teams/" + this.teamId + "/apps/" + process.env.__NESTOR_APP_PERMALINK + "/auth");
+        strings.push("You can set " + oauthEnv.map(function(p) { return p.variable; }).join(', ') + " by visiting this URL: https://www.asknestor.me/teams/" + this.teamId + "/powers/" + process.env.__NESTOR_APP_PERMALINK + "/auth");
       } else if(userEnv.length > 0) {
         strings.push("You need to set the following environment variables: " + userEnv.map(function(p) { return p.variable; }).join(', '));
         strings.push("You can set " + userEnv.map(function(p) { return p.variable; }).join(', ') + " by saying `setenv`. For example, `@nestorbot setenv " + userEnv[0].variable + "=example-value`");
