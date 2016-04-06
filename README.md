@@ -1,9 +1,9 @@
 # Nestorbot Programming Manual
 
-Nestor has a large and growing directory of apps that lets you add
+Nestor has a large and growing directory of powers that lets you add
 superpowers to your Bot.
 
-But there are scenarios where you would want to write your own apps that
+But there are scenarios where you would want to write your own powers that
 power Nestor. For e.g. to access your private stats server, or your own
 database to get results or make deploys to your own custom
 infrastructure.
@@ -14,19 +14,19 @@ your team that can automate away the mundane.
 Nestor's API is based on [Hubot's API](https://hubot.github.com/docs/scripting/) and it tries to be as compatible as
 possible with Hubot's API -- The Nestor Programming Manual has also been adapted from the Hubot documentation.
 
-Nestor is powered by "apps" that are analogous to Hubot scripts.
+Nestor is powered by "powers" that are analogous to Hubot scripts.
 
 [![Build
 Status](https://travis-ci.org/zerobotlabs/nestorbot.svg?branch=master)](https://travis-ci.org/zerobotlabs/nestorbot)
 
-## Structure of an App
+## Structure of a Power
 
-A Nestor app is at its most fundamental an NPM package with a couple of
+A Nestor power is at its most fundamental an NPM package with a couple of
 caveats:
 
 * It must have [nestorbot](https://www.npmjs.com/package/nestorbot) as a dependency
 * It must contain a JSON file called `nestor.json` with details about
-  the app. More on that later.
+  the power. More on that later.
 * It must export a function that accepts an instance of
   `[Robot](https://github.com/zerobotlabs/nestorbot/blob/master/src/robot.js)`
 
@@ -104,13 +104,13 @@ If a user Bob says "@nestorbot: weather in san francisco", `robot.respond /weath
 
 For users familiar with the existing Hubot API, you might have been
 curious about the presence of a "done" argument in `robot.hear` and
-`robot.respond`. This is because Nestor apps are invoked in
-container-ized sandboxes that exit once the app has been completed.
-Since node.js methods are asynchronous, we need to let the Nestor App
-Execution Engine that the app has completed -- and that's where the
+`robot.respond`. This is because Nestor powers are invoked in
+container-ized sandboxes that exit once the power has been completed.
+Since node.js methods are asynchronous, we need to let the Nestor Power
+Execution Engine that the power has completed -- and that's where the
 `done` argument comes in. When `done` is passed as an argument to either
 `send` or `reply` the Execution Engine will then "return" from the
-function and the app will no longer be executed.
+function and the power will no longer be executed.
 
 If you need to send data more than once, not to worry -- `msg.reply` and
 `msg.send` return promises that can be used to order messages in a given
@@ -130,7 +130,7 @@ will first send "sunny and awesome", followed by "the best weather".
 
 ## Capturing data
 
-So far, our apps have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update an app like:
+So far, our powers have had static responses, which while amusing, are boring functionality-wise. `msg.match` has the result of `match`ing the incoming message against the regular expression. This is just a [JavaScript thing](http://www.w3schools.com/jsref/jsref_match.asp), which ends up being an array with index 0 being the full text matching the expression. If you include capture groups, those will be populated `res.match`. For example, if we update an power like:
 
 ```javascript
 module.exports = function(robot) {
@@ -294,7 +294,7 @@ In addition, if node-scoped-http-client doesn't suit you, you can can use [http]
 
 ## Environment Variables
 
-If you use API keys and other secrets in your app, it's not a good idea to hard code them in your app code. Nestorbot allows you to have environment variables in your app so that code & data can be kept separate. You can set environment variables in the app by going to the section titled "Environment" for each app.
+If you use API keys and other secrets in your power, it's not a good idea to hard code them in your code. Nestorbot allows you to have environment variables in your power so that code & data can be kept separate. You can set environment variables in the power by going to the section titled "Environment" for each power.
 
 ```javascript
 module.exports = function(robot) {
@@ -321,11 +321,11 @@ module.exports = function(robot) {
 
 ## Things to Note
 
-* The filesystem available to Nestor apps is not persistent. Any files
-  that you write will not be available on the next run of the app.
+* The filesystem available to Nestor powers is not persistent. Any files
+  that you write will not be available on the next run of the power.
 * You have a maximum of 60 seconds to complete a request made to Nestorbot. If there are use cases for which you'd want longer execution time, please get in touch at [concierge@asknestor.me](mailto:concierge@asknestor.me).
 
 
 ## Feature Requests / Bug Reports / Corrections
 
-If you have feature requests, bug reports in both the app as well as the manual, please [raise an issue](https://github.com/zerobotlabs/nestorbot/issues).
+If you have feature requests, bug reports in both the power as well as the manual, please [raise an issue](https://github.com/zerobotlabs/nestorbot/issues).
