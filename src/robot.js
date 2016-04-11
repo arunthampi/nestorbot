@@ -2,6 +2,7 @@ var _ref = require('./listener'), Listener = _ref.Listener, TextListener = _ref.
 var TextMessage = require('./message').TextMessage;
 var HttpClient = require('scoped-http-client');
 var Response = require('./response').Response;
+var Brain = require('./brain');
 var Path = require('path');
 var Log = require('log');
 var Fuse = require('fuse.js');
@@ -27,6 +28,7 @@ var Robot = function(teamId, botId, debugMode) {
   this.toSend = [];
   this.toSuggest = [];
   this.globalHttpOptions = {};
+  this.brain = new Brain(this);
 
   if(this.debugMode == true) {
     process.env.NESTOR_LOG_LEVEL = 'debug';
