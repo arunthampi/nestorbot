@@ -352,7 +352,7 @@ describe('Robot', function() {
                 var _this = this;
                 this.robot.receive(testMessage, function() {
                   expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV1, ENV2",
-                                                                "You can set ENV1, ENV2 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/apps/hello/auth"], reply: true}]);
+                                                                "You can set ENV1, ENV2 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/powers/hello/auth"], reply: true}]);
                   done();
                 });
               });
@@ -367,7 +367,7 @@ describe('Robot', function() {
                 var _this = this;
                 this.robot.receive(testMessage, function() {
                   expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV2",
-                                                                "You can set ENV2 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/apps/hello/auth"], reply: true}]);
+                                                                "You can set ENV2 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/powers/hello/auth"], reply: true}]);
                   done();
                 });
               });
@@ -421,7 +421,7 @@ describe('Robot', function() {
                 var _this = this;
                 this.robot.receive(testMessage, function() {
                   expect(_this.robot.toSend).to.eql([{strings: ["You need to set the following environment variables: ENV1",
-                                                                "You can set ENV1 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/apps/hello/auth"], reply: true}]);
+                                                                "You can set ENV1 by visiting this URL: https://www.asknestor.me/teams/TDEADBEEF/powers/hello/auth"], reply: true}]);
                   done();
                 });
               });
