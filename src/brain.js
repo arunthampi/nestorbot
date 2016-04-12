@@ -38,10 +38,7 @@ Brain.prototype.set = function(key, value) {
 };
 
 Brain.prototype.mergeData = function(data) {
-  var k;
-  for (k in data || {}) {
-    this.data[k] = data[k];
-  }
+  extend(this.data._private, data);
 };
 
 Brain.prototype.get = function(key) {

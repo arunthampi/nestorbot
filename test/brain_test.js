@@ -26,14 +26,14 @@ describe('Brain', function() {
   describe('Unit Tests', function() {
     describe('#mergeData', function() {
       it('performs a proper merge with the new data taking precedent', function() {
-        this.brain.data = {
+        this.brain.data._private = {
           1: 'old',
           2: 'old'
         };
         this.brain.mergeData({
           2: 'new'
         });
-        expect(this.brain.data).to.deep.equal({
+        expect(this.brain.data._private).to.deep.equal({
           1: 'old',
           2: 'new'
         });
