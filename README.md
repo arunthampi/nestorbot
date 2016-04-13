@@ -319,6 +319,48 @@ module.exports = function(robot) {
 };
 ```
 
+### Persistence
+
+Nestorbot has a persistent key-value store exposed as `robot.brain` that can be
+used to store and retrieve data by powers.
+
+```javascript
+robot.respond(/have a soda/i, function(res, done) {
+  // Get number of sodas had (coerced to a number).
+  var sodasHad = robot.brain.get('totalSodas') * 1 || 0;
+
+  if(sodasHad > 4) {
+    res.reply("I'm too fizzy..", done);
+  } else {
+    res.reply('Sure!', done);
+  }
+
+  robot.brain.set('totalSodas', sodasHad+1);
+}
+
+robot.respond(/sleep it off/i, function(res, done) {
+  robot.brain.set('totalSodas', 0);
+  msg.reply('zzzzz', done);
+}
+```
+
+If the power needs to lookup user data, there are methods on `robot.brain` for looking up one or many users by id, name, or 'fuzzy' matching of name: `userForName`, `userForId`, and `usersForFuzzyName`.
+
+```javascript
+module.exports = function(robot) {
+  robot.respond(/who is @?([\w .\-]+)\?*$/i, function(res, done) {
+    name = res.match[1].trim();
+    users = robot.brain.usersForFuzzyName(name);
+
+    if(users.length >= 1) {
+      var user = users[0]
+      // Do something interesting here..
+      res.send(name + " is user " user, done);
+    }
+  };
+};
+```
+
 ## Things to Note
 
 * The filesystem available to Nestor powers is not persistent. Any files
